@@ -1,0 +1,2264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Центр спусков и тиражей</title>
+  <meta name="description" content="Центр спусков и тиражей — веб-сервис для препресса, расчета ручьев, раппорта и раскладок">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="favicon.svg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#171518">
+  <style>
+    :root, body.theme-pink {
+      --bg-base: #171518;
+      --bg-surface: #201d22;
+      --bg-card: #2a252d;
+      --bg-input: #121013;
+      --border: #423644;
+      --border-focus: #f096cd;
+      --text-main: #fdf2f8;
+      --text-muted: #b99fb3;
+      --primary: #f096cd;
+      --primary-hover: #e07eb8;
+      --primary-text: #19141a;
+      --accent: #f096cd;
+      --success: #22c55e;
+      --success-bg: rgba(34, 197, 94, 0.14);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.16);
+      --chip-bg: #372a37;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body.theme-mono-dark {
+      --bg-base: #121212;
+      --bg-surface: #1e1e1e;
+      --bg-card: #272727;
+      --bg-input: #161616;
+      --border: #383838;
+      --border-focus: #ffffff;
+      --text-main: #f0f0f0;
+      --text-muted: #8c8c8c;
+      --primary: #525252;
+      --primary-hover: #666666;
+      --primary-text: #ffffff;
+      --accent: #cccccc;
+      --success: #a0a0a0;
+      --success-bg: #222222;
+      --warning: #cccccc;
+      --warning-bg: #282828;
+      --danger: #e5e5e5;
+      --danger-bg: #303030;
+      --chip-bg: #2d2d2d;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body.theme-mono-light {
+      --bg-base: #f4f4f5;
+      --bg-surface: #ffffff;
+      --bg-card: #fafafa;
+      --bg-input: #ffffff;
+      --border: #d4d4d8;
+      --border-focus: #18181b;
+      --text-main: #18181b;
+      --text-muted: #71717a;
+      --primary: #27272a;
+      --primary-hover: #09090b;
+      --primary-text: #ffffff;
+      --accent: #3f3f46;
+      --success: #3f3f46;
+      --success-bg: #e4e4e7;
+      --warning: #52525b;
+      --warning-bg: #f4f4f5;
+      --danger: #27272a;
+      --danger-bg: #e4e4e7;
+      --chip-bg: #e4e4e7;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body.theme-material-dark {
+      --bg-base: #18191c;
+      --bg-surface: #22242a;
+      --bg-card: #2b2e36;
+      --bg-input: #141518;
+      --border: #383c47;
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-text: #ffffff;
+      --accent: #38bdf8;
+      --success: #22c55e;
+      --success-bg: rgba(34, 197, 94, 0.14);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.16);
+      --chip-bg: #333742;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body.theme-material-light {
+      --bg-base: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-input: #ffffff;
+      --border: #cbd5e1;
+      --border-focus: #0284c7;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-text: #ffffff;
+      --accent: #0284c7;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --chip-bg: #e2e8f0;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background-color: var(--bg-base) !important;
+      color: var(--text-main);
+      font-family: var(--font-family);
+      font-size: 12.5px;
+      line-height: 1.35;
+      padding: 12px;
+      overflow-y: scroll;
+      min-height: 100vh;
+    }
+
+    svg.icon { width: 15px; height: 15px; fill: currentColor; vertical-align: middle; flex-shrink: 0; }
+
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg-surface); padding: 8px 14px; border-radius: 6px;
+      border: 1px solid var(--border); margin-bottom: 10px; gap: 10px; flex-wrap: wrap;
+    }
+    .top-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .top-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+    .badge {
+      background: var(--chip-bg); color: var(--text-main); padding: 3px 8px;
+      border-radius: 4px; font-weight: 600; font-size: 11px; border: 1px solid var(--border);
+    }
+    .badge-dup {
+      padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 700;
+      margin-left: 4px; border: 1px solid; background: transparent;
+    }
+    .badge-empty-lane {
+      padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600;
+      border: 1px dashed var(--warning); color: var(--warning); background: var(--warning-bg);
+    }
+    .badge-overprint {
+      padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 700;
+      border: 1px solid var(--accent); color: var(--accent); margin-left: 4px;
+    }
+
+    .status-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; font-weight: 600;
+      font-size: 12px; border-left: 5px solid; flex-wrap: wrap; gap: 8px;
+    }
+    .status-ok { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+    .status-warn { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+    .status-empty { background: var(--chip-bg); border-color: var(--border); color: var(--text-muted); }
+
+    .main-grid { display: grid; grid-template-columns: 430px 1fr; gap: 12px; align-items: start; }
+    @media (max-width: 980px) { .main-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+      color: var(--accent); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+      gap: 6px; flex-wrap: wrap;
+    }
+
+    textarea, input[type="text"], input[type="number"], select {
+      background: var(--bg-input); color: var(--text-main); border: 1px solid var(--border);
+      border-radius: 4px; padding: 6px 8px;
+      font-family: var(--font-family);
+      font-feature-settings: "tnum" 1, "lnum" 1;
+      font-size: 11.5px; width: 100%;
+    }
+    textarea:focus, input:focus, select:focus { outline: none; border-color: var(--border-focus); }
+
+    button {
+      font-family: var(--font-family); font-size: 11.5px; font-weight: 600; padding: 6px 10px;
+      border-radius: 4px; border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-main); cursor: pointer; display: inline-flex; align-items: center;
+      justify-content: center; gap: 5px; transition: all 0.12s;
+    }
+    button:hover { filter: brightness(1.1); }
+    button.active, .btn-primary { background: var(--primary); border-color: var(--primary); color: var(--primary-text, #ffffff); font-weight: 700; }
+    .btn-success { background: var(--success); border-color: var(--success); color: #ffffff; }
+    .btn-warning { background: var(--warning); border-color: var(--warning); color: #111; }
+    .btn-small { font-size: 10.5px; padding: 3px 7px; }
+
+    .params-row { display: grid; grid-template-columns: 1.3fr 0.9fr 0.65fr 0.65fr 0.75fr 0.8fr; gap: 5px; margin-bottom: 8px; }
+    .param-box label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 2px; white-space: nowrap; }
+    .options-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 6px 0; font-size: 11.5px; color: var(--text-muted); flex-wrap: wrap; }
+    .chk-label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-main); user-select: none; }
+
+    .spusk-table-wrap { max-height: 460px; overflow-y: auto; border: 1px solid var(--border); border-radius: 5px; }
+    table.spusk-table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    table.spusk-table th, table.spusk-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+    table.spusk-table th { background: var(--bg-card); color: var(--text-muted); font-size: 10.5px; text-transform: uppercase; position: sticky; top: 0; z-index: 2; }
+    table.spusk-table tr:hover { background: rgba(56, 189, 248, 0.05); }
+
+    .stream-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .stream-chip {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px;
+      padding: 2px 6px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;
+      transition: all 0.12s;
+    }
+    .stream-chip-clickable { cursor: pointer; user-select: none; }
+    .stream-chip-clickable:hover { border-color: var(--accent); filter: brightness(1.15); }
+    .stream-chip-selected {
+      outline: 2px solid var(--accent);
+      background: rgba(56, 189, 248, 0.22) !important;
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+    .stream-lanes { background: var(--primary); color: #fff; font-weight: 700; font-size: 10px; padding: 0 4px; border-radius: 3px; }
+
+    .strategy-switch { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+    .strategy-btn { flex: 1; padding: 6px 8px; text-align: center; font-size: 11px; min-width: 110px; }
+
+    .subbar {
+      display: none; align-items: center; justify-content: space-between; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px;
+      padding: 6px 10px; margin-bottom: 8px; font-size: 11.5px; flex-wrap: wrap;
+    }
+
+    
+    /* Модальное окно обратной связи */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: modalFadeIn 0.15s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+    }
+    .modal-header-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .btn-close-modal:hover {
+      color: var(--text-main);
+      background: var(--bg-base);
+    }
+    .modal-body {
+      padding: 14px 16px;
+    }
+    .pill-radio-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .pill-radio {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      cursor: pointer;
+      background: var(--bg-input);
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .pill-radio:hover {
+      border-color: var(--primary);
+    }
+    .pill-radio input {
+      accent-color: var(--primary);
+      margin: 0;
+    }
+
+    #toast {
+      position: fixed; bottom: 18px; right: 18px; background: var(--success); color: #fff;
+      padding: 10px 16px; border-radius: 5px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      display: none; z-index: 1000;
+    }
+  
+    /* Режим компактного квадратика / виджета */
+    .mini-widget {
+      display: none;
+      box-sizing: border-box;
+      background: var(--bg-surface);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      user-select: none;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mini-widget:hover {
+      border-color: #fff;
+    }
+    .mini-widget-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+    }
+    .mini-widget-icon { font-size: 18px; line-height: 1; }
+    .mini-widget-info { display: flex; flex-direction: column; gap: 2px; }
+    .mini-widget-title { font-size: 11px; font-weight: 700; color: var(--text-main); }
+    .mini-widget-badge { font-size: 9px; background: var(--bg-base); color: var(--accent); padding: 1px 5px; border-radius: 3px; font-weight: 600; border: 1px solid var(--border); }
+    .mini-widget-btn { font-size: 10px; font-weight: 700; background: var(--accent); color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+
+    body.mini-mode {
+      overflow: auto !important;
+      background: var(--bg-base) !important;
+      padding: 20px !important;
+      margin: 0 !important;
+    }
+    body.mini-mode #mainAppContainer {
+      display: none !important;
+    }
+    body.mini-mode .mini-widget {
+      display: flex !important;
+      max-width: 440px !important;
+      margin: 40px auto !important;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="miniWidget" class="mini-widget" onclick="toggleMiniMode()" title="Кликните, чтобы развернуть Калькулятор">
+    <div class="mini-widget-content">
+      <span class="mini-widget-icon" style="display:flex; align-items:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <line x1="9" y1="3" x2="9" y2="21"/>
+          <line x1="15" y1="3" x2="15" y2="21"/>
+          <circle cx="18" cy="6" r="1.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <div class="mini-widget-info">
+        <span class="mini-widget-title">Центр спусков и тиражей</span>
+        <span id="miniOrderBadge" class="mini-widget-badge">Заказ не загружен</span>
+      </div>
+      <button class="mini-widget-btn" onclick="event.stopPropagation(); toggleMiniMode();" title="Развернуть во весь экран">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="vertical-align:-1px; margin-right:4px;"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        Развернуть
+      </button>
+    </div>
+  </div>
+
+  <div id="mainAppContainer">
+
+  <div class="top-bar">
+    <div class="top-title">
+      <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+        <line x1="15" y1="3" x2="15" y2="21"/>
+        <circle cx="18" cy="6" r="1.5" fill="currentColor"/>
+      </svg>
+      <span>Центр спусков и тиражей</span>
+      <span id="orderBadge" class="badge">Заказ не загружен</span>
+    </div>
+
+    <div class="top-controls">
+      <button class="btn-theme btn-small" onclick="openFeedbackModal()" title="Написать отзыв или сообщить об ошибке разработчику (Павел Погодаев)" style="font-weight:600; display:inline-flex; align-items:center; gap:5px; background:var(--bg-card); color:var(--primary); border:1px solid var(--border);">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Отзыв / Ошибка
+      </button>
+
+      <button class="btn-primary" onclick="exportReportTXT()" style="display:inline-flex; align-items:center; gap:4px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Отчёт (.txt)
+      </button>
+
+      <div style="display:inline-flex; align-items:center; gap:4px; margin-left:4px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 0 0 20z"/></svg>
+        <span style="color:var(--text-muted); font-size:11px;">Тема:</span>
+        <select id="selTheme" onchange="setTheme(this.value)" style="width:auto; padding:3px 8px; font-size:11px; font-weight:600; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); border-radius:4px; cursor:pointer;">
+          <option value="pink">Prepress Pink</option>
+          <option value="mono-dark">Монохром Dark</option>
+          <option value="mono-light">Монохром Light</option>
+          <option value="material-dark">Material Dark</option>
+          <option value="material-light">Material Light</option>
+        </select>
+      </div>
+
+      <span style="color:var(--text-muted); font-size:11px; margin-left:4px;">Масштаб:</span>
+      <button class="btn-zoom" onclick="setZoom('85%')">85%</button>
+      <button class="btn-zoom active" onclick="setZoom('100%')">100%</button>
+      <button class="btn-zoom" onclick="setZoom('115%')">115%</button>
+      <button class="btn-zoom" onclick="setZoom('130%')">130%</button>
+
+      <button id="btnMinimize" class="btn-theme btn-small" onclick="toggleMiniMode()" title="Свернуть в компактный виджет" style="font-weight:600; margin-left:6px; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); display:inline-flex; align-items:center; gap:4px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Свернуть
+      </button>
+      <button id="btnCloseCalc" class="btn-warning btn-small" onclick="closeCalculator()" title="Закрыть окно калькулятора" style="font-weight:700; margin-left:6px; display:none;">✕ Закрыть</button>
+    </div>
+  </div>
+
+  <div id="statusBar" class="status-bar status-empty">
+    <span id="statusText">Вставьте данные заказа из CRM для расчёта</span>
+    <span id="statusMeta"></span>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- ЛЕВАЯ КОЛОНКА -->
+    <div>
+      <div class="card">
+        <div class="card-title">
+          <span>1. Параметры и входные данные</span>
+        </div>
+
+        <div class="params-row">
+          <div class="param-box"><label>Заказ № / Клиент</label><input type="text" id="inpOrderInfo" placeholder="8135_OS_Брюмен" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Штамп Ш×Д</label><input type="text" id="inpStampSize" placeholder="141.5_197" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Ручьёв (C)</label><input type="number" id="inpCols" min="1" max="30" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Шагов (R)</label><input type="number" id="inpSteps" min="1" max="50" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Рап. CRM</label><input type="number" id="inpTargetRap" min="0" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Бобина (шт)</label><input type="number" id="inpRollStep" value="500" min="0" step="50" onchange="recalcAll()"></div>
+        </div>
+
+        <textarea id="inpRawSource" rows="5" placeholder="Вставьте JSON из букмарклета ИЛИ скопированный список (Имя | Тираж | ШК)..."></textarea>
+
+        <div class="options-row">
+          <label class="chk-label">
+            <input type="checkbox" id="chkPrependSeries" onchange="recalcAll()">
+            <span>Приписывать серию к названию</span>
+          </label>
+          <span id="tolHint" style="font-size:11px;"></span>
+        </div>
+
+        <button class="btn-primary" style="width:100%; margin-top:4px;" onclick="parseRawInput()">Распознать входные данные</button>
+      </div>
+
+      <!-- Блок дубликатов -->
+      <div id="duplicatesCard" class="card" style="border-color: var(--warning); display:none;">
+        <div class="card-title" style="color: var(--warning);">
+          <span>Дубликаты (<span id="dupCount">0</span>)</span>
+          <div style="display:flex; gap:4px;">
+            <button id="btnFilterDups" class="btn-small" onclick="toggleFilterDuplicatesOnly()">Только дубли в карте</button>
+            <span id="dupModeLabel" class="badge" style="font-size:10px;">Отдельно</span>
+          </div>
+        </div>
+        <textarea id="txtDuplicatesReport" rows="4" readonly style="margin-bottom:6px; color: var(--warning);"></textarea>
+        <div style="display:flex; gap:6px;">
+          <button style="flex:1;" onclick="copyTextById('txtDuplicatesReport', 'Вопрос скопирован!')">Менеджеру</button>
+          <button id="btnMergeDups" class="btn-warning" style="flex:1;" onclick="toggleMergeDuplicates()">Объединить дубли</button>
+        </div>
+      </div>
+
+      <!-- Список для Excel и CRM -->
+      <div class="card">
+        <div class="card-title">
+          <span>2. Список для Excel и CRM</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label class="chk-label" style="font-size:10.5px; text-transform:none; font-weight:normal;">
+              <input type="checkbox" id="chkSortBySpusk" checked onchange="renderCleanExport()">
+              <span>По спускам</span>
+            </label>
+            <span id="cleanCountBadge" class="badge">0 поз.</span>
+          </div>
+        </div>
+        <textarea id="txtCleanExport" rows="10" readonly></textarea>
+        <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+          <button class="btn-primary" style="flex:1;" onclick="copyCleanExport('excel5')">Excel</button>
+          <button class="btn-success" style="flex:1;" onclick="copyCleanExport('crm4')">CRM</button>
+          <button style="flex:1;" onclick="copyCleanExport('excel3')">Кратко</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА -->
+    <div>
+      <div class="card">
+        <div class="card-title">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span>3. Карта спусков</span>
+            <span id="spuskHeaderMeta" style="font-size:11px; color:var(--text-muted); text-transform:none;"></span>
+          </div>
+          <button id="btnManualGroupMode" class="btn-small" onclick="toggleManualGroupMode()" title="Включить ручное объединение и разделение видов по клику">Группировка видов</button>
+        </div>
+
+        <div class="strategy-switch">
+          <button id="btnStratMaxOpt" class="strategy-btn active" onclick="setStrategy('max_opt')">1. Макс. оптимизация</button>
+          <button id="btnStratDivisors" class="strategy-btn" onclick="setStrategy('divisors')">2. Делители ручьёв</button>
+          <button id="btnStratProp" class="strategy-btn" onclick="setStrategy('proportional')">3. Кратное слияние</button>
+          <button id="btnStratUnwind" class="strategy-btn" onclick="setStrategy('unwind')">4. Под размотку</button>
+          <button id="btnStratCrm" class="strategy-btn" onclick="setStrategy('crm_spusk')">5. Как в CRM</button>
+          <button id="btnStratSeparate" class="strategy-btn" onclick="setStrategy('separate')">6. Каждый отдельно</button>
+        </div>
+
+        <!-- Панель ручной группировки (Вариант Б: мультивыбор) -->
+        <div id="manualGroupBar" class="subbar" style="display:none; background:rgba(56, 189, 248, 0.12); border:1px solid var(--accent); align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-weight:700; color:var(--accent);">Выбрано видов: <span id="manualSelectedCount">0</span></span>
+            <span style="font-size:11px; color:var(--text-muted);">(кликните по макетам в таблице)</span>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn-primary btn-small" id="btnGroupSelected" onclick="groupSelectedItems()" disabled>Объединить в спуск</button>
+            <button class="btn-warning btn-small" id="btnSeparateSelected" onclick="separateSelectedItems()" disabled>Вынести отдельно</button>
+            <button class="btn-small" onclick="resetManualGrouping()">Сбросить к авто</button>
+          </div>
+        </div>
+
+        <!-- Настройка допустимого переката для режима 1 "Макс. оптимизация" -->
+        <div id="maxOptSubbar" class="subbar" style="display:flex;">
+          <span>Допустимый перекат ради экономии приладки:</span>
+          <div style="display:flex; gap:6px;">
+            <button id="btnOptMod" class="btn-small active" onclick="setOptTolerance(0.20)">До 20% (Умеренный)</button>
+            <button id="btnOptAgg" class="btn-small" onclick="setOptTolerance(0.35)">До 35% (Макс. сжатие)</button>
+          </div>
+        </div>
+
+        <!-- Настройка концовки для режима 4 "Под размотку" -->
+        <div id="unwindSubbar" class="subbar">
+          <span>Концовка (неполный спуск):</span>
+          <div style="display:flex; gap:6px;">
+            <button id="btnTailEmpty" class="btn-small active" onclick="setUnwindTailMode('empty_lane')">Пустой ручей (без склеек)</button>
+            <button id="btnTailOverprint" class="btn-small" onclick="setUnwindTailMode('overprint')">Добить перетиражом</button>
+          </div>
+        </div>
+
+        <div class="spusk-table-wrap">
+          <table class="spusk-table">
+            <thead>
+              <tr>
+                <th style="width:68px;">Спуск</th>
+                <th>Распределение макетов по ручьям</th>
+                <th style="width:76px;">Раппорты</th>
+                <th style="width:95px;">Метраж</th>
+                <th style="width:115px;">Статус / Склейки</th>
+              </tr>
+            </thead>
+            <tbody id="spuskTableBody">
+              <tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">Ожидание данных заказа...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div class="card">
+          <div class="card-title">
+            <span>4. Памятка конфекциону</span>
+            <button id="btnConfMode" class="btn-small" onclick="toggleConfectionMode()">Тираж: Фактический</button>
+          </div>
+          <textarea id="txtConfection" rows="7" readonly></textarea>
+          <button style="width:100%; margin-top:6px;" onclick="copyTextById('txtConfection', 'Скопировано!')">Копировать</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>5. Имена монтажек</span>
+            <label class="chk-label" style="font-size:10.5px; text-transform:none; font-weight:normal;">
+              <input type="checkbox" id="chkOsFullMulti" onchange="renderConfectionAndArtboards()">
+              <span>Имена в мультиспуске OS</span>
+            </label>
+          </div>
+          <textarea id="txtArtboardNames" rows="7" readonly></textarea>
+          <div style="display:flex; gap:6px; margin-top:6px;">
+            <button class="btn-primary" style="flex:1;" onclick="copyTextById('txtArtboardNames', 'Скопировано!')">Копировать</button>
+            <button style="flex:1;" onclick="renameArtboardsInIllustrator()">Переименовать в AI</button>
+            <button class="btn-small" onclick="downloadCompanionScript()" title="Скачать скрипт для применения имен монтажек в Illustrator (.jsx)" style="padding:4px 8px; font-size:11px;">Скачать .jsx</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Модальное окно обратной связи и сообщений об ошибках -->
+  <div id="feedbackModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFeedbackModal();">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-header-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Обратная связь и предложения</span>
+        </div>
+        <button class="btn-close-modal" onclick="closeFeedbackModal()" title="Закрыть">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+          Отзыв будет направлен разработчику: <strong style="color:var(--text-main);">Павел Погодаев</strong> (<a href="mailto:pavelpogodaev@gmail.com" style="color:var(--primary); text-decoration:none;">pavelpogodaev@gmail.com</a>).
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="font-size:10.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:5px; text-transform:uppercase;">Тип сообщения</label>
+          <div class="pill-radio-group">
+            <label class="pill-radio"><input type="radio" name="fbType" value="Пожелание / идея" checked> <span>Пожелание / идея</span></label>
+            <label class="pill-radio"><input type="radio" name="fbType" value="Ошибка в расчете"> <span>Ошибка в расчете</span></label>
+            <label class="pill-radio"><input type="radio" name="fbType" value="Вопрос"> <span>Вопрос</span></label>
+          </div>
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="font-size:10.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px; text-transform:uppercase;">Ваше имя или отдел</label>
+          <input type="text" id="fbAuthor" placeholder="Например: Иван (Препресс)" style="width:100%; box-sizing:border-box;">
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="font-size:10.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px; text-transform:uppercase;">Сообщение (что улучшить или что пошло не так)</label>
+          <textarea id="fbMessage" rows="4" placeholder="Опишите подробно, с каким заказом возникла проблема или какую функцию хочется добавить..." style="width:100%; box-sizing:border-box;"></textarea>
+        </div>
+
+        <div style="margin-bottom:14px; background:var(--bg-input); padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
+          <label class="chk-label" style="font-size:11px; cursor:pointer;">
+            <input type="checkbox" id="fbAttachDump" checked>
+            <span>Прикрепить диагностические данные текущего расчета</span>
+          </label>
+          <div id="fbDumpPreview" style="font-size:10px; color:var(--text-muted); margin-top:4px; font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            Заказ: не загружен
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn-primary" style="flex:1; padding:9px 12px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="submitFeedbackEmail()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Отправить на почту
+          </button>
+          <button style="flex:1; padding:9px 12px; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="copyFeedbackReport()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Скопировать отчёт
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">Скопировано!</div>
+
+  <script>
+    /*
+     * ЦЕНТР СПУСКОВ И ТИРАЖЕЙ v3.4
+     * Алгоритм "1. Макс. оптимизация" (packMaxOptimization):
+     * Ищет комбинации макетов (как равных, так и пропорциональных, например 1 ручей + 2 ручья при C=3),
+     * в которых стоимость перетиража в метрах меньше стоимости сэкономленной приладки (150 м в OS / 15 м в HP).
+     */
+
+    const DUP_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e'];
+
+    // --- Интеграция RAM-окна с родительской панелью Cloud Prepress (v3.5) ---
+    var csInterface = null;
+    try {
+      if (window.opener) {
+        if (window.opener.csInterface) csInterface = window.opener.csInterface;
+        if (window.opener.cep && !window.cep) window.cep = window.opener.cep;
+        if (window.opener.__adobe_cep__ && !window.__adobe_cep__) window.__adobe_cep__ = window.opener.__adobe_cep__;
+      } else if (typeof CSInterface !== 'undefined') {
+        csInterface = new CSInterface();
+      }
+    } catch(e) {
+      console.warn("Ошибка инициализации интерфейса CEP:", e);
+    }
+
+    function closeCalculator() {
+      // Если открыто как дочернее RAM-окно — закрываем только его, не трогая родительскую панель
+      if (window.opener) {
+        window.close();
+      } else if (csInterface && typeof csInterface.closeExtension === 'function') {
+        csInterface.closeExtension();
+      } else {
+        window.close();
+      }
+    }
+
+    function setTheme(themeName) {
+      document.body.className = '';
+      document.body.classList.add('theme-' + themeName);
+      localStorage.setItem('calc_active_theme', themeName);
+      var sel = document.getElementById('selTheme');
+      if (sel) sel.value = themeName;
+    }
+
+    function saveCalculatorState() {
+      try {
+        var state = {
+          orderInfo: (document.getElementById('inpOrderInfo') || {}).value || '',
+          stampSize: (document.getElementById('inpStampSize') || {}).value || '',
+          cols: (document.getElementById('inpCols') || {}).value || '',
+          steps: (document.getElementById('inpSteps') || {}).value || '',
+          targetRap: (document.getElementById('inpTargetRap') || {}).value || '',
+          rollStep: (document.getElementById('inpRollStep') || {}).value || '',
+          rawSource: (document.getElementById('inpRawSource') || {}).value || '',
+          prependSeries: (document.getElementById('chkPrependSeries') || {}).checked || false
+        };
+        localStorage.setItem('calc_v34_state', JSON.stringify(state));
+      } catch(e) {}
+    }
+
+    function restoreCalculatorState() {
+      try {
+        var saved = localStorage.getItem('calc_v34_state');
+        if (saved) {
+          var state = JSON.parse(saved);
+          if (state.orderInfo && document.getElementById('inpOrderInfo')) document.getElementById('inpOrderInfo').value = state.orderInfo;
+          if (state.stampSize && document.getElementById('inpStampSize')) document.getElementById('inpStampSize').value = state.stampSize;
+          if (state.cols && document.getElementById('inpCols')) document.getElementById('inpCols').value = state.cols;
+          if (state.steps && document.getElementById('inpSteps')) document.getElementById('inpSteps').value = state.steps;
+          if (state.targetRap && document.getElementById('inpTargetRap')) document.getElementById('inpTargetRap').value = state.targetRap;
+          if (state.rollStep && document.getElementById('inpRollStep')) document.getElementById('inpRollStep').value = state.rollStep;
+          if (state.prependSeries !== undefined && document.getElementById('chkPrependSeries')) document.getElementById('chkPrependSeries').checked = state.prependSeries;
+          if (state.rawSource && document.getElementById('inpRawSource') && !document.getElementById('inpRawSource').value) {
+            document.getElementById('inpRawSource').value = state.rawSource;
+            return true;
+          }
+        }
+      } catch(e) {}
+      return false;
+    }
+
+    let parsedItems = [];
+    let workingItems = [];
+    let mergeDuplicates = false;
+    let showDuplicatesOnly = false;
+    let currentStrategy = 'max_opt';
+    let maxOptTolerance = 0.20; // 0.20 (до 20% переката) или 0.35 (до 35% переката)
+    let unwindTailMode = 'empty_lane';
+    let confectionShowRawRap = false;
+    let spusksResult = [];
+    let currentColorsStr = 'CMYK';
+    let currentRapPrintMeters = 0.845;
+    let currentOrderRapportMm = 0;
+
+    function isOffsetOrder() {
+      const ordInfo = document.getElementById('inpOrderInfo').value.trim();
+      return /_OS_|^OS_|_OS$/i.test(ordInfo);
+    }
+
+    function getMakeReadyMeters() {
+      return isOffsetOrder() ? 150 : 15;
+    }
+
+    function toggleTheme() {
+      var current = localStorage.getItem('calc_active_theme') || 'pink';
+      var next = (current === 'pink') ? 'mono-dark' : (current === 'mono-dark' ? 'mono-light' : 'pink');
+      setTheme(next);
+    }
+
+    function setZoom(val) {
+      document.body.style.zoom = val;
+      document.querySelectorAll('.btn-zoom').forEach(b => b.classList.toggle('active', b.innerText === val));
+    }
+
+    let manualGroupMode = false;
+    let selectedItemKeys = new Set();
+    let manualSpusksMap = null;
+
+    function getItemUniqueKey(it) {
+      return it.dupKey || (it.fullName + '_' + it.amount + '_' + (it.barcode || ''));
+    }
+
+    function toggleManualGroupMode() {
+      manualGroupMode = !manualGroupMode;
+      const btn = document.getElementById('btnManualGroupMode');
+      if (btn) {
+        btn.classList.toggle('active', manualGroupMode);
+        btn.innerText = manualGroupMode ? '✓ Группировка вкл.' : 'Группировка видов';
+      }
+      const bar = document.getElementById('manualGroupBar');
+      if (bar) bar.style.display = manualGroupMode ? 'flex' : 'none';
+      if (!manualGroupMode) {
+        selectedItemKeys.clear();
+      }
+      updateManualSelectionUI();
+      recalcAll();
+    }
+
+    function toggleItemSelection(key) {
+      if (!manualGroupMode) return;
+      if (selectedItemKeys.has(key)) {
+        selectedItemKeys.delete(key);
+      } else {
+        selectedItemKeys.add(key);
+      }
+      updateManualSelectionUI();
+      recalcAll();
+    }
+
+    function updateManualSelectionUI() {
+      const count = selectedItemKeys.size;
+      const countEl = document.getElementById('manualSelectedCount');
+      if (countEl) countEl.innerText = count;
+      const btnGroup = document.getElementById('btnGroupSelected');
+      const btnSep = document.getElementById('btnSeparateSelected');
+      if (btnGroup) btnGroup.disabled = (count < 2);
+      if (btnSep) btnSep.disabled = (count < 1);
+    }
+
+    function groupSelectedItems() {
+      if (selectedItemKeys.size < 2) return;
+      if (!manualSpusksMap) {
+        manualSpusksMap = {};
+        spusksResult.forEach(sp => {
+          sp.items.forEach(it => {
+            manualSpusksMap[getItemUniqueKey(it)] = sp.spuskNum;
+          });
+        });
+      }
+
+      let targetSpusk = null;
+      selectedItemKeys.forEach(key => {
+        if (manualSpusksMap[key] !== undefined) {
+          if (targetSpusk === null || manualSpusksMap[key] < targetSpusk) {
+            targetSpusk = manualSpusksMap[key];
+          }
+        }
+      });
+      if (targetSpusk === null) {
+        targetSpusk = Math.max(0, ...Object.values(manualSpusksMap)) + 1;
+      }
+
+      selectedItemKeys.forEach(key => {
+        manualSpusksMap[key] = targetSpusk;
+      });
+
+      selectedItemKeys.clear();
+      updateManualSelectionUI();
+      recalcAll();
+      showToast('Выбранные виды объединены в спуск ' + targetSpusk);
+    }
+
+    function separateSelectedItems() {
+      if (selectedItemKeys.size < 1) return;
+      if (!manualSpusksMap) {
+        manualSpusksMap = {};
+        spusksResult.forEach(sp => {
+          sp.items.forEach(it => {
+            manualSpusksMap[getItemUniqueKey(it)] = sp.spuskNum;
+          });
+        });
+      }
+
+      let nextSpusk = Math.max(0, ...Object.values(manualSpusksMap)) + 1;
+      selectedItemKeys.forEach(key => {
+        manualSpusksMap[key] = nextSpusk++;
+      });
+
+      selectedItemKeys.clear();
+      updateManualSelectionUI();
+      recalcAll();
+      showToast('Выбранные виды вынесены на отдельные спуски');
+    }
+
+    function resetManualGrouping() {
+      manualSpusksMap = null;
+      selectedItemKeys.clear();
+      updateManualSelectionUI();
+      recalcAll();
+      showToast('Ручная группировка сброшена');
+    }
+
+    function packEachSeparately(items, cols, stepsPerLane) {
+      const spusks = [];
+      let spuskCounter = 1;
+      items.forEach(it => {
+        it.assignedSpusk = spuskCounter;
+        it.assignedLanes = cols;
+        it.effectiveTirazh = it.amount;
+        const rap = Math.ceil(it.amount / (cols * stepsPerLane));
+        spusks.push({
+          spuskNum: spuskCounter++,
+          items: [it],
+          rap: rap,
+          meters: Math.round(rap * currentRapPrintMeters),
+          stepsPerLane: stepsPerLane,
+          emptyLanes: 0
+        });
+      });
+      return spusks;
+    }
+
+    function packByManualGroups(items, cols, stepsPerLane) {
+      const spuskGroups = {};
+      items.forEach(it => {
+        const key = getItemUniqueKey(it);
+        const spNum = (manualSpusksMap && manualSpusksMap[key]) ? manualSpusksMap[key] : (it.assignedSpusk || 1);
+        if (!spuskGroups[spNum]) spuskGroups[spNum] = [];
+        spuskGroups[spNum].push(it);
+      });
+
+      const sortedSpuskKeys = Object.keys(spuskGroups).map(Number).sort((a, b) => a - b);
+      const reindexedMap = {};
+      sortedSpuskKeys.forEach((oldNum, idx) => {
+        reindexedMap[oldNum] = idx + 1;
+      });
+
+      if (manualSpusksMap) {
+        for (let k in manualSpusksMap) {
+          if (reindexedMap[manualSpusksMap[k]]) {
+            manualSpusksMap[k] = reindexedMap[manualSpusksMap[k]];
+          }
+        }
+      }
+
+      const spusks = [];
+      sortedSpuskKeys.forEach(oldNum => {
+        const spNum = reindexedMap[oldNum];
+        const grp = spuskGroups[oldNum];
+        const lanesEach = Math.max(1, Math.floor(cols / grp.length));
+        let freeLanes = cols - (lanesEach * grp.length);
+
+        grp.sort((a, b) => b.amount - a.amount);
+        grp.forEach((it, idx) => {
+          it.assignedSpusk = spNum;
+          it.assignedLanes = lanesEach + (idx < freeLanes ? 1 : 0);
+          it.effectiveTirazh = it.amount;
+        });
+
+        const maxAmt = Math.max(...grp.map(x => x.amount));
+        const minLanes = Math.min(...grp.map(x => x.assignedLanes || 1));
+        const rap = Math.ceil(maxAmt / (minLanes * stepsPerLane));
+        spusks.push({
+          spuskNum: spNum,
+          items: grp,
+          rap: rap,
+          meters: Math.round(rap * currentRapPrintMeters),
+          stepsPerLane: stepsPerLane,
+          emptyLanes: Math.max(0, cols - grp.reduce((acc, x) => acc + x.assignedLanes, 0))
+        });
+      });
+
+      return spusks;
+    }
+
+    function setStrategy(strat) {
+      currentStrategy = strat;
+      manualSpusksMap = null;
+      selectedItemKeys.clear();
+      updateManualSelectionUI();
+      document.querySelectorAll('.strategy-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.querySelector(`[onclick="setStrategy('${strat}')"]`);
+      if (btn) btn.classList.add('active');
+      document.getElementById('maxOptSubbar').style.display = (strat === 'max_opt') ? 'flex' : 'none';
+      document.getElementById('unwindSubbar').style.display = (strat === 'unwind') ? 'flex' : 'none';
+      recalcAll();
+    }
+
+    function setOptTolerance(tol) {
+      maxOptTolerance = tol;
+      document.getElementById('btnOptMod').classList.toggle('active', tol === 0.20);
+      document.getElementById('btnOptAgg').classList.toggle('active', tol === 0.35);
+      recalcAll();
+    }
+
+    function setUnwindTailMode(mode) {
+      unwindTailMode = mode;
+      document.getElementById('btnTailEmpty').classList.toggle('active', mode === 'empty_lane');
+      document.getElementById('btnTailOverprint').classList.toggle('active', mode === 'overprint');
+      recalcAll();
+    }
+
+    function toggleFilterDuplicatesOnly() {
+      showDuplicatesOnly = !showDuplicatesOnly;
+      document.getElementById('btnFilterDups').classList.toggle('active', showDuplicatesOnly);
+      recalcAll();
+    }
+
+    function toggleConfectionMode() {
+      confectionShowRawRap = !confectionShowRawRap;
+      document.getElementById('btnConfMode').innerText = confectionShowRawRap
+        ? 'Тираж: По раппортам'
+        : 'Тираж: Фактический';
+      renderConfectionAndArtboards();
+    }
+
+    function cleanNum(val) {
+      if (val === undefined || val === null) return 0;
+      const n = parseFloat(String(val).replace(/\s+/g, '').replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    }
+
+    function cleanSeriesPrefix(seriesStr) {
+      return seriesStr.replace(/на\s+казахстан/gi, 'КАЗАХСТАН').replace(/(\d+)\s*грамм/gi, '$1г').replace(/\s+/g, ' ').trim();
+    }
+
+    function makeDuplicateKey(series, rawName) {
+      const fullContext = ((series || '') + ' ' + (rawName || '')).toLowerCase();
+
+      let country = 'default';
+      if (/кыргызстан|киргиз|\bkg\b/i.test(fullContext)) country = 'kg';
+      else if (/казахстан|\bkz\b|\bкз\b/i.test(fullContext)) country = 'kz';
+      else if (/беларус|\bby\b|\bрб\b/i.test(fullContext)) country = 'by';
+      else if (/росси|\bru\b|\bрф\b/i.test(fullContext)) country = 'ru';
+      else if (/узбекистан|\buz\b/i.test(fullContext)) country = 'uz';
+
+      let line = 'default';
+      if (/heavy/i.test(fullContext)) line = 'heavy';
+      else if (/classic/i.test(fullContext)) line = 'classic';
+      else if (/strong/i.test(fullContext)) line = 'strong';
+      else if (/light/i.test(fullContext)) line = 'light';
+
+      const weightMatch = fullContext.match(/(\d+)\s*(?:г|гр|грамм|ml|мл)\b/i);
+      const weight = weightMatch ? weightMatch[1] : '';
+
+      const quoteMatch = rawName.match(/"([^"]+)"/);
+      let flavor = '';
+      if (quoteMatch) {
+        flavor = quoteMatch[1].toLowerCase().trim();
+      } else {
+        flavor = rawName
+          .replace(/раздел\s+каталога:?/gi, '')
+          .replace(/palitra|heavy|classic|на\s+казахстан|казахстан|кыргызстан|киргизия|\d+\s*грамм|\d+\s*г/gi, '')
+          .toLowerCase()
+          .replace(/[^a-zа-я0-9]/gi, '');
+      }
+
+      return [country, line, weight, flavor].join('::');
+    }
+
+    function parseMultilineTextList(text) {
+      const rawLines = text.split(/[\r\n]+/);
+      let currentSeries = '';
+      let bufferNameParts = [];
+      const extracted = [];
+
+      for (let i = 0; i < rawLines.length; i++) {
+        let line = rawLines[i].replace(/^\s+|\s+$/g, '');
+        if (!line || /^наименовани/i.test(line) || /см\.?\s*список/i.test(line) || /^шт\.?$/i.test(line) || /^(?:по\s*образц|внимание|срочно|важно|ремарк|комментар|примечани)/i.test(line)) continue;
+
+        if (line.indexOf('\t') !== -1) {
+          const parts = line.split(/\t+/).map(s => s.trim()).filter(Boolean);
+          if (parts.length >= 2) {
+            const candidateAmt = cleanNum(parts[1]);
+            if (candidateAmt > 0 && !/^\d+$/.test(parts[0])) {
+              let bc = '', sp = 0, lanes = 1;
+              let col3 = (parts[2] && !/^шт\.?$/i.test(parts[2])) ? parts[2] : (parts[3] || '');
+              let col4 = (parts[2] && !/^шт\.?$/i.test(parts[2])) ? (parts[3] || '') : (parts[4] || '');
+              let col5 = (parts.length >= 5) ? parts[4] : '';
+
+              if (col3) {
+                if (col4 || /[a-zа-яё_-]/i.test(col3) || col3.length >= 3) {
+                  bc = col3;
+                } else if (/^\d{1,2}(?:\(\d+\))?$/.test(col3)) {
+                  const m3 = col3.match(/^(\d+)(?:\((\d+)\))?/);
+                  if (m3) { sp = parseInt(m3[1], 10); if (m3[2]) lanes = parseInt(m3[2], 10); }
+                }
+              }
+              if (col4) {
+                const m4 = col4.match(/^(\d+)(?:\((\d+)\))?/);
+                if (m4) { sp = parseInt(m4[1], 10); if (m4[2]) lanes = parseInt(m4[2], 10); }
+              }
+              if (col5 && /^\d+$/.test(col5)) {
+                lanes = parseInt(col5, 10);
+              }
+
+              extracted.push({ series: currentSeries, shortName: parts[0], amount: candidateAmt, barcode: bc, crmSpusk: sp, crmLanes: lanes });
+              bufferNameParts = [];
+              continue;
+            }
+          }
+        }
+
+        const inlineMatch = line.match(/^(.+?)\s+[-—–:]*\s*(\d[\d\s]*)\s*(?:шт\.?)?$/i);
+        if (inlineMatch && !/грамм/i.test(line)) {
+          let nameCand = inlineMatch[1].replace(/[\s—–:-]+$/, '').trim();
+          const amtCand = cleanNum(inlineMatch[2]);
+          if (nameCand.length > 2 && amtCand > 0) {
+            const fullShortName = bufferNameParts.length
+              ? (bufferNameParts.join(' ') + ' ' + nameCand).replace(/\s+/g, ' ').trim()
+              : nameCand;
+            extracted.push({ series: currentSeries, shortName: fullShortName, amount: amtCand, barcode: '', crmSpusk: 0, crmLanes: 1 });
+            bufferNameParts = [];
+            continue;
+          }
+        }
+
+        if (/^-?\s*\d+[\s\d]*$/.test(line)) {
+          const val = cleanNum(line);
+          if (val > 0 && bufferNameParts.length > 0) {
+            extracted.push({ series: currentSeries, shortName: bufferNameParts.join(' ').replace(/\s+/g, ' ').trim(), amount: val, barcode: '', crmSpusk: 0 });
+            bufferNameParts = [];
+          }
+          continue;
+        }
+
+        if (/palitra|серия|линейка|\d+\s*грамм/i.test(line) && line.indexOf('"') === -1) {
+          currentSeries = cleanSeriesPrefix((currentSeries && !/palitra/i.test(line) ? currentSeries + ' ' : '') + line);
+          bufferNameParts = [];
+          continue;
+        }
+        bufferNameParts.push(line);
+      }
+      return extracted;
+    }
+
+    function parseRawInput() {
+      const rawText = document.getElementById('inpRawSource').value.trim();
+      if (!rawText) {
+        parsedItems = []; workingItems = []; spusksResult = [];
+        renderSpusksTable(17, 15); renderCleanExport(); renderConfectionAndArtboards();
+        return;
+      }
+
+      if (rawText.startsWith('{')) {
+        const lastBrace = rawText.lastIndexOf('}');
+        if (lastBrace !== -1) {
+          try {
+            applyJsonOrderObject(JSON.parse(rawText.substring(0, lastBrace + 1)));
+            return;
+          } catch (e) {}
+        }
+      }
+      finalizeParsedItems(parseMultilineTextList(rawText));
+    }
+
+    function applyJsonOrderObject(obj) {
+      const ord = obj.order || 'ORDER';
+      const tp = obj.orderType || 'HP';
+      document.getElementById('inpOrderInfo').value = `${ord}_${tp}_${(obj.client || 'CLIENT').replace(/\s+/g, '_')}`;
+      document.getElementById('orderBadge').innerText = `Заказ №${ord} (${tp})`;
+      if (obj.width && obj.length) document.getElementById('inpStampSize').value = `${obj.width}_${obj.length}`;
+
+      const cols = Math.max(1, parseInt(obj.cols, 10) || 1);
+      const rows = Math.max(1, parseInt(obj.rows, 10) || 1);
+      document.getElementById('inpCols').value = cols;
+      const targetRap = cleanNum(obj.rapportOnZakaz);
+      document.getElementById('inpTargetRap').value = targetRap || 0;
+
+      const totalTirazh = cleanNum(obj.tirazh);
+      const rapPrint = cleanNum(obj.rapportPrint);
+      const stepPrint = cleanNum(obj.stepPrint) || cleanNum(obj.rapport);
+      currentOrderRapportMm = cleanNum(obj.rapport) || cleanNum(obj.stepPrint) || 0;
+
+      if (tp.toUpperCase() === 'OS') {
+        currentRapPrintMeters = (currentOrderRapportMm || cleanNum(obj.length) || 200) / 1000;
+        document.getElementById('inpSteps').value = rows;
+      } else {
+        if (rapPrint > 0) currentRapPrintMeters = rapPrint / 1000;
+        let stepsPerLane = rows;
+        if (targetRap > 0 && totalTirazh > 0) {
+          stepsPerLane = Math.max(1, Math.round(Math.round(totalTirazh / targetRap) / cols));
+        } else if (rapPrint > 0 && stepPrint > 0) {
+          stepsPerLane = Math.max(1, Math.round(rapPrint / stepPrint) * rows);
+        }
+        document.getElementById('inpSteps').value = stepsPerLane;
+      }
+
+      if (obj.colorsShort && obj.colorsShort.length) currentColorsStr = obj.colorsShort.join('');
+
+      const makets = obj.makets || [];
+      const noteItems = obj.prepressNote ? parseMultilineTextList(obj.prepressNote) : [];
+      if (noteItems.length > 1 && (makets.length <= 1 || /см\.?\s*список|образц/i.test(makets[0].name))) {
+        finalizeParsedItems(noteItems);
+      } else if (makets.length > 1 && !/см\.?\s*список|образц/i.test(makets[0].name)) {
+        finalizeParsedItems(makets.map(m => {
+          const rawSp = String(m.spusk || '');
+          const mSp = rawSp.match(/^(\d+)(?:\((\d+)\))?/);
+          return {
+            series: '',
+            shortName: m.name.trim(),
+            amount: cleanNum(m.amount),
+            barcode: (m.article || '').trim(),
+            crmSpusk: mSp ? parseInt(mSp[1], 10) : 0,
+            crmLanes: (mSp && mSp[2]) ? parseInt(mSp[2], 10) : 1
+          };
+        }));
+      } else if (noteItems.length > 0) {
+        finalizeParsedItems(noteItems);
+      } else if (makets.length > 0) {
+        finalizeParsedItems(makets.map(m => {
+          const rawSp = String(m.spusk || '');
+          const mSp = rawSp.match(/^(\d+)(?:\((\d+)\))?/);
+          return {
+            series: '',
+            shortName: m.name.trim(),
+            amount: cleanNum(m.amount),
+            barcode: (m.article || '').trim(),
+            crmSpusk: mSp ? parseInt(mSp[1], 10) : 0,
+            crmLanes: (mSp && mSp[2]) ? parseInt(mSp[2], 10) : 1
+          };
+        }));
+      }
+    }
+
+    function finalizeParsedItems(items) {
+      if (!items || !items.length) return;
+      document.getElementById('chkPrependSeries').checked = (new Set(items.map(x => x.series).filter(Boolean)).size > 1);
+      parsedItems = items;
+      recalcAll();
+    }
+
+    function toggleMergeDuplicates() { mergeDuplicates = !mergeDuplicates; recalcAll(); }
+    function getDivisorsDesc(n) { const d = []; for (let i = n; i >= 1; i--) { if (n % i === 0) d.push(i); } return d; }
+
+    function recalcAll() {
+      if (!parsedItems.length) return;
+      const prependSeries = document.getElementById('chkPrependSeries').checked;
+      const activeCols = Math.max(1, parseInt(document.getElementById('inpCols').value, 10) || 1);
+      const stepsPerLane = Math.max(1, parseInt(document.getElementById('inpSteps').value, 10) || 1);
+      const divisors = getDivisorsDesc(activeCols);
+      const isOS = isOffsetOrder();
+
+      if (isOS) {
+        if (currentOrderRapportMm > 0) {
+          currentRapPrintMeters = currentOrderRapportMm / 1000;
+        } else {
+          const sizeParts = document.getElementById('inpStampSize').value.split('_');
+          const lenMm = parseFloat(sizeParts[1]) || 200;
+          currentRapPrintMeters = (lenMm * stepsPerLane) / 1000;
+        }
+      }
+
+      const makeReadyMeters = getMakeReadyMeters();
+      const makeReadyRaps = Math.ceil(makeReadyMeters / currentRapPrintMeters);
+
+      document.getElementById('tolHint').innerText = `Шаг 1 ручья: ${stepsPerLane} шт. | Приладка ${isOS ? 'OS: 150м (протяжка 35м)' : 'HP: 15м'}`;
+      document.getElementById('orderBadge').innerText = document.getElementById('inpOrderInfo').value.trim() || (isOS ? 'Заказ OS' : 'Заказ HP');
+
+      const prepared = parsedItems.map((it, idx) => ({
+        ...it,
+        origIndex: idx,
+        fullName: (prependSeries && it.series) ? `${it.series} ${it.shortName}` : it.shortName,
+        dupKey: makeDuplicateKey(it.series, it.shortName)
+      }));
+
+      const groupByKey = {};
+      prepared.forEach(item => {
+        if (!groupByKey[item.dupKey]) groupByKey[item.dupKey] = [];
+        groupByKey[item.dupKey].push(item);
+      });
+
+      const duplicateGroups = Object.values(groupByKey).filter(g => g.length > 1);
+      const dupCard = document.getElementById('duplicatesCard');
+
+      duplicateGroups.forEach((grp, i) => {
+        const color = DUP_COLORS[i % DUP_COLORS.length];
+        grp.forEach(item => { item.dupColor = color; item.dupIndex = i + 1; });
+      });
+
+      if (duplicateGroups.length > 0) {
+        dupCard.style.display = 'block';
+        document.getElementById('dupCount').innerText = duplicateGroups.length;
+        document.getElementById('dupModeLabel').innerText = mergeDuplicates ? 'Суммированы' : 'Отдельно';
+        document.getElementById('btnMergeDups').innerText = mergeDuplicates ? 'Разъединить' : 'Объединить дубли';
+
+        const reportLines = ['Подскажите по повторам (одна серия и страна) — печатаем отдельно или суммируем?'];
+        duplicateGroups.forEach((grp, i) => {
+          const amountsStr = grp.map(g => `${g.amount} шт`).join(' + ');
+          const labelName = grp[0].series ? `${grp[0].series} ${grp[0].shortName}` : grp[0].shortName;
+          reportLines.push(`${i + 1}. [Дубль ${i + 1}] ${labelName}: ${amountsStr} (в сумме ${grp.reduce((acc, g) => acc + g.amount, 0)} шт)`);
+        });
+        document.getElementById('txtDuplicatesReport').value = reportLines.join('\n');
+      } else {
+        dupCard.style.display = 'none';
+        showDuplicatesOnly = false;
+      }
+
+      if (mergeDuplicates) {
+        const mergedMap = {};
+        workingItems = [];
+        prepared.forEach(it => {
+          if (!mergedMap[it.dupKey]) {
+            const clone = { ...it, isDup: groupByKey[it.dupKey].length > 1, assignedSpusk: 1, assignedLanes: 1, effectiveTirazh: it.amount };
+            if (it.dupColor) { clone.dupColor = it.dupColor; clone.dupIndex = it.dupIndex; }
+            mergedMap[it.dupKey] = clone;
+            workingItems.push(clone);
+          } else {
+            mergedMap[it.dupKey].amount += it.amount;
+            mergedMap[it.dupKey].effectiveTirazh = mergedMap[it.dupKey].amount;
+          }
+        });
+      } else {
+        workingItems = prepared.map(it => ({
+          ...it,
+          isDup: groupByKey[it.dupKey].length > 1,
+          assignedSpusk: 1,
+          assignedLanes: 1,
+          effectiveTirazh: it.amount
+        }));
+      }
+
+      document.getElementById('spuskHeaderMeta').innerText =
+        `Тип: ${isOS ? 'OS (Офсет)' : 'HP (Цифра)'} | Ручьёв: ${activeCols} | Шагов: ${stepsPerLane} | В 1 раппорте: ${activeCols * stepsPerLane} шт.`;
+
+      if (manualSpusksMap && Object.keys(manualSpusksMap).length > 0) {
+        spusksResult = packByManualGroups(workingItems, activeCols, stepsPerLane);
+      } else if (currentStrategy === 'separate') {
+        spusksResult = packEachSeparately(workingItems, activeCols, stepsPerLane);
+      } else if (currentStrategy === 'crm_spusk' && workingItems.some(x => x.crmSpusk > 0)) {
+        spusksResult = packByCrmSpusk(workingItems, activeCols, stepsPerLane);
+      } else if (currentStrategy === 'max_opt') {
+        spusksResult = packMaxOptimization(workingItems, activeCols, stepsPerLane, divisors, makeReadyMeters, maxOptTolerance);
+      } else if (currentStrategy === 'proportional') {
+        spusksResult = packProportional(workingItems, activeCols, stepsPerLane);
+      } else if (currentStrategy === 'unwind') {
+        spusksResult = packForUnwinding(workingItems, activeCols, stepsPerLane, divisors);
+      } else {
+        spusksResult = packByDivisors(workingItems, activeCols, stepsPerLane, divisors);
+      }
+
+      renderSpusksTable(makeReadyRaps, makeReadyMeters, activeCols, stepsPerLane, divisors);
+      renderCleanExport();
+      renderConfectionAndArtboards();
+    }
+
+    /*
+     * СТРАТЕГИЯ 1: МАКСИМАЛЬНАЯ ОПТИМИЗАЦИЯ (ЭКОНОМИЯ ПРИЛАДОК И МЕТРАЖА)
+     * 1. Сначала упаковывает крупные однородные пачки без переката.
+     * 2. Для разнотиражных видов проверяет:
+     *    - группировку близких тиражей по C видов (по 1 ручью на вид);
+     *    - пропорциональные разбиения ручьёв (например, 1 ручей + 2 ручья при C=3, или 1+1+2 при C=4).
+     * 3. Если стоимость перетиража в метрах меньше сэкономленной приладки (150м OS / 15м HP)
+     *    и перетираж каждого вида в пределах выбранного порога (20% или 35%), объединяет их в 1 спуск.
+     */
+    function packMaxOptimization(items, cols, stepsPerLane, divisors, makeReadyMeters, maxOverRatio) {
+      const spusks = [];
+      let spuskCounter = 1;
+      const pool = items.slice().sort((a, b) => a.amount - b.amount);
+
+      // Шаг А: если есть полные пачки совершенно одинаковых тиражей по cols штук — сначала забираем их
+      const byExactAmt = {};
+      pool.forEach(it => {
+        if (!byExactAmt[it.amount]) byExactAmt[it.amount] = [];
+        byExactAmt[it.amount].push(it);
+      });
+      Object.keys(byExactAmt).map(Number).sort((a, b) => a - b).forEach(amt => {
+        const grp = byExactAmt[amt];
+        while (grp.length >= cols) {
+          const chunk = grp.splice(0, cols);
+          chunk.forEach(c => {
+            const idx = pool.indexOf(c);
+            if (idx > -1) pool.splice(idx, 1);
+            c.assignedSpusk = spuskCounter;
+            c.assignedLanes = 1;
+            c.effectiveTirazh = amt;
+          });
+          const rap = Math.ceil(amt / stepsPerLane);
+          spusks.push({
+            spuskNum: spuskCounter++,
+            items: chunk,
+            rap: rap,
+            meters: Math.round(rap * currentRapPrintMeters),
+            stepsPerLane: stepsPerLane,
+            emptyLanes: 0
+          });
+        }
+      });
+
+      // Вспомогательная оценка выгоды объединения группы кандидатов с заданным распределением ручьёв
+      function evaluateCandidate(candItems, lanesArr) {
+        let maxRap = 0;
+        for (let i = 0; i < candItems.length; i++) {
+          const r = Math.ceil(candItems[i].amount / (lanesArr[i] * stepsPerLane));
+          if (r > maxRap) maxRap = r;
+        }
+        // Проверяем процент перетиража по каждому макету в комбинации
+        let maxItemOverRatio = 0;
+        for (let i = 0; i < candItems.length; i++) {
+          const actualOut = maxRap * lanesArr[i] * stepsPerLane;
+          const overRatio = (actualOut - candItems[i].amount) / candItems[i].amount;
+          if (overRatio > maxOverRatio + 0.005) return null; // Превышен порог перетиража
+          if (overRatio > maxItemOverRatio) maxItemOverRatio = overRatio;
+        }
+
+        // Считаем полный расход материала (печать + приладки), если бы эти виды печатались отдельно во все ручьи
+        let separateTotalMeters = 0;
+        candItems.forEach(it => {
+          const sepRap = Math.ceil(it.amount / (cols * stepsPerLane));
+          separateTotalMeters += (sepRap * currentRapPrintMeters) + makeReadyMeters;
+        });
+
+        const combinedTotalMeters = (maxRap * currentRapPrintMeters) + makeReadyMeters;
+        const savedMeters = separateTotalMeters - combinedTotalMeters;
+
+        if (savedMeters <= 5) return null; // Нет ощутимой экономии метража
+        return {
+          items: candItems,
+          lanes: lanesArr,
+          rap: maxRap,
+          savedMeters: savedMeters,
+          maxOverRatio: maxItemOverRatio
+        };
+      }
+
+      // Шаг Б: жадный поиск наиболее выгодных слияний (по 1 ручью на C видов и пропорциональных долей)
+      while (pool.length > 0) {
+        pool.sort((a, b) => a.amount - b.amount);
+        let bestCombo = null;
+
+        // 1. Проверяем окно из cols близких по тиражу видов (каждому по 1 ручью)
+        if (pool.length >= cols && cols > 1) {
+          for (let i = 0; i <= pool.length - cols; i++) {
+            const slice = pool.slice(i, i + cols);
+            const lanesOnes = new Array(cols).fill(1);
+            const res = evaluateCandidate(slice, lanesOnes);
+            if (res && (!bestCombo || res.savedMeters > bestCombo.savedMeters)) {
+              bestCombo = res;
+            }
+          }
+        }
+
+        // 2. Проверяем парные пропорциональные слияния (2 вида делят cols ручьёв: l1 + l2 = cols)
+        if (pool.length >= 2 && cols >= 2) {
+          for (let i = 0; i < pool.length; i++) {
+            for (let j = i + 1; j < pool.length; j++) {
+              for (let l1 = 1; l1 < cols; l1++) {
+                const l2 = cols - l1;
+                const res = evaluateCandidate([pool[i], pool[j]], [l1, l2]);
+                if (res && (!bestCombo || res.savedMeters > bestCombo.savedMeters)) {
+                  bestCombo = res;
+                }
+              }
+            }
+          }
+        }
+
+        // 3. Проверяем тройные пропорциональные слияния при cols >= 4 (l1 + l2 + l3 = cols)
+        if (pool.length >= 3 && cols >= 4 && cols <= 8) {
+          for (let i = 0; i < pool.length - 2; i++) {
+            for (let j = i + 1; j < pool.length - 1; j++) {
+              for (let k = j + 1; k < pool.length; k++) {
+                for (let l1 = 1; l1 <= cols - 2; l1++) {
+                  for (let l2 = 1; l2 <= cols - l1 - 1; l2++) {
+                    const l3 = cols - l1 - l2;
+                    const res = evaluateCandidate([pool[i], pool[j], pool[k]], [l1, l2, l3]);
+                    if (res && (!bestCombo || res.savedMeters > bestCombo.savedMeters)) {
+                      bestCombo = res;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        if (bestCombo) {
+          bestCombo.items.forEach((it, idx) => {
+            const pIdx = pool.indexOf(it);
+            if (pIdx > -1) pool.splice(pIdx, 1);
+            it.assignedSpusk = spuskCounter;
+            it.assignedLanes = bestCombo.lanes[idx];
+            it.effectiveTirazh = bestCombo.rap * bestCombo.lanes[idx] * stepsPerLane;
+          });
+          spusks.push({
+            spuskNum: spuskCounter++,
+            items: bestCombo.items,
+            rap: bestCombo.rap,
+            meters: Math.round(bestCombo.rap * currentRapPrintMeters),
+            stepsPerLane: stepsPerLane,
+            emptyLanes: 0
+          });
+        } else {
+          // Если выгодных слияний больше нет — закрываем самый младший оставшийся вид через делители
+          const rest = packByDivisors([pool.shift()], cols, stepsPerLane, divisors);
+          rest.forEach(rs => {
+            rs.spuskNum = spuskCounter++;
+            rs.items.forEach(it => { it.assignedSpusk = rs.spuskNum; });
+            spusks.push(rs);
+          });
+        }
+      }
+
+      return spusks;
+    }
+
+    function packByDivisors(items, cols, stepsPerLane, divisors) {
+      const spusks = [];
+      let spuskCounter = 1;
+      const groups = [];
+
+      items.forEach(it => {
+        let foundGrp = groups.find(g => Math.abs(g.baseAmount - it.amount) <= stepsPerLane);
+        if (!foundGrp) { foundGrp = { baseAmount: it.amount, list: [] }; groups.push(foundGrp); }
+        foundGrp.list.push(it);
+        if (it.amount > foundGrp.baseAmount) foundGrp.baseAmount = it.amount;
+      });
+
+      groups.sort((a, b) => a.baseAmount - b.baseAmount).forEach(grp => {
+        const pool = grp.list.slice();
+        while (pool.length > 0) {
+          let chosenCount = 1;
+          for (let d = 0; d < divisors.length; d++) {
+            if (divisors[d] <= pool.length) { chosenCount = divisors[d]; break; }
+          }
+          const chunk = pool.splice(0, chosenCount);
+          const lanesPerItem = cols / chosenCount;
+          chunk.forEach(itemRef => {
+            itemRef.assignedSpusk = spuskCounter;
+            itemRef.assignedLanes = lanesPerItem;
+            itemRef.effectiveTirazh = grp.baseAmount;
+          });
+          const rap = Math.ceil(grp.baseAmount / (lanesPerItem * stepsPerLane));
+          spusks.push({
+            spuskNum: spuskCounter++,
+            items: chunk,
+            rap: rap,
+            meters: Math.round(rap * currentRapPrintMeters),
+            stepsPerLane: stepsPerLane,
+            emptyLanes: 0
+          });
+        }
+      });
+      return spusks;
+    }
+
+    function packProportional(items, cols, stepsPerLane) {
+      const spusks = [];
+      let spuskCounter = 1;
+      const byAmount = {};
+      items.forEach(it => { if (!byAmount[it.amount]) byAmount[it.amount] = []; byAmount[it.amount].push(it); });
+      const amountsSorted = Object.keys(byAmount).map(Number).sort((a, b) => a - b);
+      const leftovers = [];
+
+      amountsSorted.forEach(amt => {
+        const group = byAmount[amt].slice();
+        while (group.length >= cols) {
+          const chunk = group.splice(0, cols);
+          chunk.forEach(c => { c.assignedSpusk = spuskCounter; c.assignedLanes = 1; c.effectiveTirazh = amt; });
+          const rap = Math.ceil(amt / stepsPerLane);
+          spusks.push({ spuskNum: spuskCounter++, items: chunk, rap: rap, meters: Math.round(rap * currentRapPrintMeters), stepsPerLane: stepsPerLane, emptyLanes: 0 });
+        }
+        leftovers.push(...group);
+      });
+
+      leftovers.sort((a, b) => a.amount - b.amount);
+      while (leftovers.length > 0) {
+        const baseAmt = leftovers[0].amount;
+        let combo = [], usedLanes = 0;
+        for (let i = 0; i < leftovers.length; i++) {
+          const cand = leftovers[i];
+          const ratio = cand.amount / baseAmt;
+          if (Number.isInteger(ratio) && ratio >= 1 && (usedLanes + ratio) <= cols) {
+            combo.push({ item: cand, lanes: ratio });
+            usedLanes += ratio;
+          }
+        }
+        if (usedLanes === cols && combo.length > 1) {
+          const chunk = combo.map(c => {
+            c.item.assignedSpusk = spuskCounter;
+            c.item.assignedLanes = c.lanes;
+            c.item.effectiveTirazh = baseAmt * c.lanes;
+            const idx = leftovers.indexOf(c.item);
+            if (idx > -1) leftovers.splice(idx, 1);
+            return c.item;
+          });
+          const rap = Math.ceil(baseAmt / stepsPerLane);
+          spusks.push({ spuskNum: spuskCounter++, items: chunk, rap: rap, meters: Math.round(rap * currentRapPrintMeters), stepsPerLane: stepsPerLane, emptyLanes: 0 });
+        } else {
+          const restSpusks = packByDivisors(leftovers.splice(0), cols, stepsPerLane, getDivisorsDesc(cols));
+          restSpusks.forEach(rs => {
+            rs.spuskNum = spuskCounter++;
+            rs.items.forEach(it => { it.assignedSpusk = rs.spuskNum; });
+            spusks.push(rs);
+          });
+        }
+      }
+      return spusks;
+    }
+
+    function packForUnwinding(items, cols, stepsPerLane, divisors) {
+      const spusks = [];
+      let spuskCounter = 1;
+      const groups = [];
+
+      items.forEach(it => {
+        let foundGrp = groups.find(g => Math.abs(g.baseAmount - it.amount) <= stepsPerLane);
+        if (!foundGrp) { foundGrp = { baseAmount: it.amount, list: [] }; groups.push(foundGrp); }
+        foundGrp.list.push(it);
+        if (it.amount > foundGrp.baseAmount) foundGrp.baseAmount = it.amount;
+      });
+
+      groups.sort((a, b) => a.baseAmount - b.baseAmount);
+      const rollStep = Math.max(100, parseInt(document.getElementById('inpRollStep').value, 10) || 500);
+      let carryOverPool = [];
+
+      for (let gIdx = 0; gIdx < groups.length; gIdx++) {
+        const grp = groups[gIdx];
+        const pool = grp.list.slice();
+        const amt = grp.baseAmount;
+
+        while (pool.length > 0) {
+          if (pool.length < cols && gIdx < groups.length - 1 && amt >= rollStep) {
+            const nextAmt = groups[gIdx + 1].baseAmount;
+            if (nextAmt % amt === 0) {
+              let bestDiv = 1;
+              for (let d = 0; d < divisors.length; d++) {
+                if (divisors[d] <= pool.length && divisors[d] > 1) { bestDiv = divisors[d]; break; }
+              }
+              if (bestDiv > 1 && pool.length > bestDiv) {
+                const chunk = pool.splice(0, bestDiv);
+                const lanesPerItem = cols / bestDiv;
+                chunk.forEach(it => {
+                  it.assignedSpusk = spuskCounter;
+                  it.assignedLanes = lanesPerItem;
+                  it.effectiveTirazh = amt;
+                });
+                const rap = Math.ceil(amt / (lanesPerItem * stepsPerLane));
+                spusks.push({ spuskNum: spuskCounter++, items: chunk, rap: rap, meters: Math.round(rap * currentRapPrintMeters), stepsPerLane: stepsPerLane, emptyLanes: 0 });
+                continue;
+              }
+              carryOverPool.push(...pool.splice(0));
+              break;
+            }
+          }
+
+          if (carryOverPool.length > 0) {
+            const combined = carryOverPool.splice(0).concat(pool.splice(0));
+            const minAmt = Math.min(...combined.map(x => x.amount));
+            let usedLanes = 0;
+            const currentSpuskItems = [];
+
+            combined.forEach(it => {
+              const neededLanes = Math.max(1, Math.round(it.amount / minAmt));
+              if (usedLanes + neededLanes <= cols) {
+                it.assignedSpusk = spuskCounter;
+                it.assignedLanes = neededLanes;
+                it.effectiveTirazh = neededLanes * minAmt;
+                usedLanes += neededLanes;
+                currentSpuskItems.push(it);
+              } else {
+                pool.push(it);
+              }
+            });
+
+            let emptyLanes = cols - usedLanes;
+            if (emptyLanes > 0 && unwindTailMode === 'overprint' && currentSpuskItems.length > 0) {
+              currentSpuskItems[0].assignedLanes += emptyLanes;
+              currentSpuskItems[0].effectiveTirazh = currentSpuskItems[0].assignedLanes * minAmt;
+              emptyLanes = 0;
+            }
+
+            const rap = Math.ceil(minAmt / stepsPerLane);
+            spusks.push({
+              spuskNum: spuskCounter++,
+              items: currentSpuskItems,
+              rap: rap,
+              meters: Math.round(rap * currentRapPrintMeters),
+              stepsPerLane: stepsPerLane,
+              emptyLanes: emptyLanes
+            });
+            continue;
+          }
+
+          let chosenCount = 1;
+          for (let d = 0; d < divisors.length; d++) {
+            if (divisors[d] <= pool.length) { chosenCount = divisors[d]; break; }
+          }
+          const chunk = pool.splice(0, chosenCount);
+          const lanesPerItem = cols / chosenCount;
+          chunk.forEach(itemRef => {
+            itemRef.assignedSpusk = spuskCounter;
+            itemRef.assignedLanes = lanesPerItem;
+            itemRef.effectiveTirazh = amt;
+          });
+          const rap = Math.ceil(amt / (lanesPerItem * stepsPerLane));
+          spusks.push({
+            spuskNum: spuskCounter++,
+            items: chunk,
+            rap: rap,
+            meters: Math.round(rap * currentRapPrintMeters),
+            stepsPerLane: stepsPerLane,
+            emptyLanes: 0
+          });
+        }
+      }
+
+      return spusks;
+    }
+
+    function packByCrmSpusk(items, cols, stepsPerLane) {
+      const map = {};
+      items.forEach(it => { const sp = it.crmSpusk || 1; if (!map[sp]) map[sp] = []; map[sp].push(it); });
+      const spusks = [];
+      Object.keys(map).map(Number).sort((a, b) => a - b).forEach(spNum => {
+        const grp = map[spNum];
+        const lanesEach = Math.max(1, Math.floor(cols / grp.length));
+        grp.forEach(it => {
+          it.assignedSpusk = spNum;
+          it.assignedLanes = (it.crmLanes && it.crmLanes > 0) ? it.crmLanes : lanesEach;
+          it.effectiveTirazh = it.amount;
+        });
+        const maxAmt = Math.max(...grp.map(x => x.amount));
+        const minLanes = Math.min(...grp.map(x => x.assignedLanes || 1));
+        const rap = Math.ceil(maxAmt / (minLanes * stepsPerLane));
+        spusks.push({ spuskNum: spNum, items: grp, rap: rap, meters: Math.round(rap * currentRapPrintMeters), stepsPerLane: stepsPerLane, emptyLanes: 0 });
+      });
+      return spusks;
+    }
+
+    function renderSpusksTable(makeReadyRaps, makeReadyMeters, cols, stepsPerLane, divisors) {
+      const tbody = document.getElementById('spuskTableBody');
+      tbody.innerHTML = '';
+      if (spusksResult.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-muted);">Заказ пуст или не распознан</td></tr>';
+        return;
+      }
+
+      const rollStep = Math.max(100, parseInt(document.getElementById('inpRollStep').value, 10) || 500);
+      let totalRaps = 0, totalPrintMeters = 0;
+
+      spusksResult.forEach(sp => {
+        totalRaps += sp.rap;
+        totalPrintMeters += sp.meters;
+
+        if (showDuplicatesOnly && !sp.items.some(it => it.isDup)) return;
+
+        const pcsPerSingleLane = sp.rap * sp.stepsPerLane;
+        let maxSplicesOnSpusk = 0;
+
+        const chipsHtml = sp.items.map(it => {
+          const isOverprinted = it.effectiveTirazh > it.amount;
+          if (it.amount >= rollStep && it.assignedLanes > 1 && pcsPerSingleLane < rollStep) {
+            const splices = it.assignedLanes - 1;
+            if (splices > maxSplicesOnSpusk) maxSplicesOnSpusk = splices;
+          }
+
+          const dupBadge = it.isDup
+            ? `<span class="badge-dup" style="border-color:${it.dupColor}; color:${it.dupColor};">ДУБЛЬ ${it.dupIndex}</span>`
+            : '';
+          const overBadge = isOverprinted
+            ? `<span class="badge-overprint">выход ${it.effectiveTirazh} (+${it.effectiveTirazh - it.amount})</span>`
+            : '';
+          const bcTag = it.barcode ? ` <span style="color:var(--text-muted);">[${it.barcode}]</span>` : '';
+
+          const key = getItemUniqueKey(it);
+          const isSelected = selectedItemKeys.has(key);
+          const clickAttr = manualGroupMode ? `onclick="toggleItemSelection('${key.replace(/'/g, "\\'")}')"` : '';
+          const chipClasses = ['stream-chip'];
+          if (manualGroupMode) chipClasses.push('stream-chip-clickable');
+          if (isSelected) chipClasses.push('stream-chip-selected');
+          const checkIcon = manualGroupMode ? (isSelected ? '☑ ' : '☐ ') : '';
+
+          return `<span class="${chipClasses.join(' ')}" ${clickAttr} title="${manualGroupMode ? 'Кликните для выбора/снятия выбора' : ''}">
+            <span class="stream-lanes">${it.assignedLanes} руч.</span>
+            <span>${checkIcon}${it.fullName}${bcTag} <b>(${it.amount})</b></span>${overBadge}${dupBadge}
+          </span>`;
+        }).join('');
+
+        const emptyBadge = sp.emptyLanes > 0
+          ? `<span class="badge-empty-lane">Пустых ручьёв: ${sp.emptyLanes}</span>`
+          : '';
+
+        let statusHtml = '<span style="color:var(--success); font-weight:600;">✓ Оптимально</span>';
+        if (sp.rap < makeReadyRaps) {
+          statusHtml = `<span class="badge-dup" style="border-color:var(--danger);color:var(--danger)">Печать &lt; ${makeReadyMeters}м</span>`;
+        } else if (maxSplicesOnSpusk > 0) {
+          statusHtml = `<span class="badge-dup" style="border-color:var(--warning);color:var(--warning)">Склеек: ${maxSplicesOnSpusk} (${pcsPerSingleLane} шт/руч)</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>Спуск ${sp.spuskNum}</b></td>
+          <td><div class="stream-chips">${chipsHtml}${emptyBadge}</div></td>
+          <td><b style="color:var(--accent); font-size:12.5px;">${sp.rap} rap</b></td>
+          <td>${sp.meters} м <span style="color:var(--text-muted); font-size:10px;">(+${makeReadyMeters}м)</span></td>
+          <td>${statusHtml}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      const totalMakeReadyMeters = spusksResult.length * makeReadyMeters;
+      const grandTotalMeters = totalPrintMeters + totalMakeReadyMeters;
+
+      // Считаем базовый расход без оптимизации (по делителям) для отображения реальной экономии
+      const baseClones = workingItems.map(x => ({ ...x }));
+      const baseSpusks = packByDivisors(baseClones, cols, stepsPerLane, divisors);
+      const basePrintMeters = baseSpusks.reduce((acc, s) => acc + s.meters, 0);
+      const baseGrandMeters = basePrintMeters + (baseSpusks.length * makeReadyMeters);
+      const savedMeters = baseGrandMeters - grandTotalMeters;
+      const savedSpusks = baseSpusks.length - spusksResult.length;
+
+      const targetRap = parseInt(document.getElementById('inpTargetRap').value, 10) || 0;
+      const totalCleanTirazh = workingItems.reduce((acc, it) => acc + it.amount, 0);
+      const statusBar = document.getElementById('statusBar');
+
+      document.getElementById('statusMeta').innerText =
+        `Видов: ${workingItems.length} | Спусков: ${spusksResult.length} | Раппортов: ${totalRaps} rap | Материал: ${totalPrintMeters}м печать + ${totalMakeReadyMeters}м приладки = ${grandTotalMeters}м`;
+
+      statusBar.className = 'status-bar status-ok';
+      if (savedMeters > 5 && savedSpusks > 0) {
+        document.getElementById('statusText').innerText =
+          `Оптимизировано: сэкономлено ${savedMeters} м материала и ${savedSpusks} приладок (${spusksResult.length} спуска вместо ${baseSpusks.length})`;
+      } else if (targetRap > 0 && totalRaps === targetRap) {
+        document.getElementById('statusText').innerText = `Идеальное совпадение с CRM: ${totalRaps} rap`;
+      } else {
+        document.getElementById('statusText').innerText = `Расчёт выполнен (${spusksResult.length} спусков, всего ${grandTotalMeters} м с приладками).`;
+      }
+    }
+
+    function translitOS(str) {
+      if (!str) return '';
+      const map = {
+        'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y',
+        'к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f',
+        'х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'
+      };
+      return String(str).trim().replace(/[а-яё]/gi, ch => {
+        const low = ch.toLowerCase();
+        const tr = map[low] !== undefined ? map[low] : ch;
+        return (ch === low) ? tr : tr.toUpperCase();
+      }).replace(/[^a-zA-Z0-9_-]+/g, '_').replace(/^_+|_+$/g, '');
+    }
+
+    function buildOsSpuskName(orderNum, sp, includeFullNamesInMulti) {
+      const pNum = sp.spuskNum;
+      if (sp.items.length === 1) {
+        const it = sp.items[0];
+        const nameLat = translitOS(it.fullName);
+        const bcLat = it.barcode ? '_' + translitOS(it.barcode) : '';
+        return `${orderNum}_${nameLat}${bcLat}_page${pNum}`;
+      } else {
+        const parts = sp.items.map(it => {
+          const nameLat = translitOS(it.fullName);
+          const bcLat = it.barcode ? translitOS(it.barcode) : nameLat;
+          return includeFullNamesInMulti ? (nameLat + (it.barcode ? '_' + bcLat : '')) : bcLat;
+        });
+        if (includeFullNamesInMulti) {
+          return `${orderNum}_multispusk${pNum}_${parts.join('__')}_page${pNum}`;
+        }
+        return `${orderNum}_multispusk${pNum}_${parts.join('_')}_page${pNum}`;
+      }
+    }
+
+    function getOrderedWorkingItems() {
+      const list = workingItems.slice();
+      if (document.getElementById('chkSortBySpusk').checked) {
+        list.sort((a, b) => (a.assignedSpusk - b.assignedSpusk) || (a.amount - b.amount));
+      }
+      return list;
+    }
+
+    function formatSpuskRule(it) {
+      const sp = it.assignedSpusk || 1;
+      const lanes = it.assignedLanes || 1;
+      return lanes > 1 ? `${sp}(${lanes})` : `${sp}`;
+    }
+
+    function formatLanesCol(it) {
+      const lanes = it.assignedLanes || 1;
+      return lanes > 1 ? `${lanes}` : '';
+    }
+
+    function renderCleanExport() {
+      document.getElementById('cleanCountBadge').innerText = `${workingItems.length} поз.`;
+      const list = getOrderedWorkingItems();
+      const hasAnyBC = list.some(it => it.barcode && it.barcode.length > 0);
+      const hasAnyMultiLane = list.some(it => it.assignedLanes > 1);
+
+      document.getElementById('txtCleanExport').value = list
+        .map(it => {
+          const bc = it.barcode || '';
+          const spusk = it.assignedSpusk || 1;
+          const laneVal = formatLanesCol(it);
+          if (hasAnyBC || hasAnyMultiLane) {
+            return `${it.fullName}\t${it.amount}\t${bc}\t${spusk}\t${laneVal}`;
+          }
+          return `${it.fullName}\t${it.amount}\t${spusk}`;
+        })
+        .join('\n');
+    }
+
+    function copyCleanExport(mode) {
+      const list = getOrderedWorkingItems();
+      const lines = list.map(it => {
+        const bc = it.barcode || '';
+        const spuskNum = it.assignedSpusk || 1;
+        const spuskCrm = formatSpuskRule(it);
+        const laneVal = formatLanesCol(it);
+
+        if (mode === 'excel5' || mode === 'autolink5') {
+          // Стандарт 5 колонок (как на скриншоте): Имя | Тираж | ШК | Спуск | Ручьи
+          return `${it.fullName}\t${it.amount}\t${bc}\t${spuskNum}\t${laneVal}`;
+        }
+        if (mode === 'crm4') {
+          // CRM 4 колонки: Имя | Тираж | ШК | Спуск с правилом 2(3)
+          return `${it.fullName}\t${it.amount}\t${bc}\t${spuskCrm}`;
+        }
+        if (mode === 'excel3') {
+          // Excel 3 колонки: Имя | Тираж | Спуск с правилом 2(3)
+          return `${it.fullName}\t${it.amount}\t${spuskCrm}`;
+        }
+        return `${it.fullName}\t${it.amount}\t${bc}\t${spuskNum}\t${laneVal}`;
+      });
+      copyRawText(lines.join('\n'), 'Список скопирован в буфер!');
+    }
+
+    function renderConfectionAndArtboards() {
+      const confLines = [];
+      spusksResult.forEach(sp => {
+        const isMulti = sp.items.length > 1;
+        const typeTag = isMulti ? ' [МУЛЬТИСПУСК]' : '';
+        const emptyInfo = sp.emptyLanes > 0 ? ` (пустых ручьёв: ${sp.emptyLanes})` : '';
+        confLines.push(`=== СПУСК ${sp.spuskNum}${typeTag}${emptyInfo} ===`);
+        sp.items.forEach(it => {
+          const rawRapPcs = sp.rap * it.assignedLanes * sp.stepsPerLane;
+          const cleanActualPcs = it.effectiveTirazh || it.amount;
+          let qtyStr = `${cleanActualPcs} шт.`;
+          if (confectionShowRawRap) {
+            qtyStr = `${rawRapPcs} шт.`;
+          } else if (cleanActualPcs > it.amount) {
+            qtyStr = `${cleanActualPcs} шт. (по списку ${it.amount} шт.)`;
+          }
+          const bcInfo = it.barcode ? ` [${it.barcode}]` : '';
+          confLines.push(`• ${it.fullName}${bcInfo} — ${it.assignedLanes} руч. | ${qtyStr}`);
+        });
+      });
+      document.getElementById('txtConfection').value = confLines.join('\n');
+
+      const orderInfo = document.getElementById('inpOrderInfo').value.trim().replace(/\s+/g, '_') || 'ORDER_HP';
+      const stampSize = document.getElementById('inpStampSize').value.trim().replace(/\s+/g, '_') || '150_185';
+      const isOS = isOffsetOrder();
+      const includeFullMulti = document.getElementById('chkOsFullMulti').checked;
+      const orderNumOnly = orderInfo.split('_')[0] || orderInfo;
+
+      const abLines = spusksResult.map(sp => {
+        if (isOS) {
+          return buildOsSpuskName(orderNumOnly, sp, includeFullMulti);
+        }
+        return `${orderInfo}_page${sp.spuskNum}_${sp.rap}rap_${stampSize}_${currentColorsStr}`;
+      });
+      if (!isOS) abLines.push(`Stamp_${stampSize}`);
+      document.getElementById('txtArtboardNames').value = abLines.join('\n');
+    }
+
+    function copyTextById(elId, toastMsg) { copyRawText(document.getElementById(elId).value, toastMsg); }
+    function copyRawText(text, toastMsg) {
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => showToast(toastMsg)).catch(() => {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        showToast(toastMsg);
+      });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2400);
+    }
+
+    async function saveFileSafe(content, defaultFileName, mimeType, extDesc, extValue) {
+      if (window.cep && window.cep.fs && window.cep.fs.showSaveDialogEx) {
+        const res = window.cep.fs.showSaveDialogEx('Сохранить файл отчёта', '', [extValue.replace('.', '')], defaultFileName);
+        if (res && res.data) {
+          window.cep.fs.writeFile(res.data, content);
+          showToast('Файл сохранён на диск!');
+          return;
+        }
+      }
+
+      if (window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: defaultFileName,
+            types: [{
+              description: extDesc,
+              accept: { [mimeType]: [extValue] }
+            }]
+          });
+          const writable = await handle.createWritable();
+          await writable.write(content);
+          await writable.close();
+          showToast('Файл успешно сохранён!');
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+
+      const blob = new Blob(['\uFEFF' + content], { type: mimeType + ';charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = defaultFileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 1500);
+      showToast('Файл отправлен в загрузки!');
+    }
+
+/* exportPageHTML removed for IP protection */
+
+    async function exportReportTXT() {
+      const order = document.getElementById('inpOrderInfo').value.trim() || 'ORDER';
+      const meta = document.getElementById('statusMeta').innerText;
+      const cleanList = document.getElementById('txtCleanExport').value;
+      const confection = document.getElementById('txtConfection').value;
+      const artboards = document.getElementById('txtArtboardNames').value;
+
+      const report = [
+        `==================================================`,
+        `ОТЧЁТ ПО СПУСКАМ И ТИРАЖАМ: ${order}`,
+        `${meta}`,
+        `==================================================`,
+        ``,
+        `--- 1. СПИСОК ДЛЯ EXCEL И CRM ---`,
+        cleanList,
+        ``,
+        `--- 2. ПАМЯТКА КОНФЕКЦИОНУ ---`,
+        confection,
+        ``,
+        `--- 3. ИМЕНА МОНТАЖЕК (ARTBOARDS) ---`,
+        artboards
+      ].join('\r\n');
+
+      const orderNum = order.split('_')[0] || 'calc';
+      await saveFileSafe(report, `Report_${orderNum}.txt`, 'text/plain', 'Текстовый отчёт', '.txt');
+    }
+
+    function renameArtboardsInIllustrator() {
+      const names = document.getElementById('txtArtboardNames').value.split('\n').filter(Boolean);
+      if (!names || names.length === 0) {
+        alert("Калькулятор спусков:\nСписок имён монтажек пуст! Сначала вставьте заказ и нажмите расчёт.");
+        return;
+      }
+      const jsonArr = JSON.stringify(names);
+      const jsx = '(function(){\n' +
+        'try {\n' +
+        '  if (app.documents.length === 0) {\n' +
+        '    alert("Калькулятор спусков:\\nНет открытого документа в Illustrator!");\n' +
+        '    return;\n' +
+        '  }\n' +
+        '  var doc = app.activeDocument;\n' +
+        '  var arr = ' + jsonArr + ';\n' +
+        '  var max = Math.min(doc.artboards.length, arr.length);\n' +
+        '  for (var i = 0; i < max; i++) {\n' +
+        '    doc.artboards[i].name = arr[i];\n' +
+        '  }\n' +
+        '  alert("Калькулятор спусков:\\nУспешно переименовано монтажек: " + max + " из " + arr.length);\n' +
+        '} catch(e) {\n' +
+        '  alert("Ошибка переименования монтажек:\\n" + e.message);\n' +
+        '}\n' +
+      '})();';
+
+      if (csInterface && typeof csInterface.evalScript === 'function') {
+        csInterface.evalScript(jsx);
+      } else if (window.__adobe_cep__ && typeof window.__adobe_cep__.evalScript === 'function') {
+        window.__adobe_cep__.evalScript(jsx);
+      } else {
+        copyTextById('txtArtboardNames', 'Имена монтажек скопированы в буфер обмена!');
+        alert("Имена монтажек скопированы в буфер обмена!\nЗапустите в Illustrator скрипт 'Применить_имена_монтажек.jsx' или вставьте список.");
+      }
+    }
+
+    
+    
+    // --- ОБРАТНАЯ СВЯЗЬ И ОТЗЫВЫ (Павел Погодаев: pavelpogodaev@gmail.com) ---
+    const DEV_FEEDBACK_EMAIL = "pavelpogodaev@gmail.com";
+
+    function openFeedbackModal() {
+      var modal = document.getElementById('feedbackModal');
+      if (!modal) return;
+      var dumpPreview = document.getElementById('fbDumpPreview');
+      var orderInfo = (document.getElementById('inpOrderInfo') || {}).value || '';
+      var cols = (document.getElementById('inpCols') || {}).value || '';
+      var steps = (document.getElementById('inpSteps') || {}).value || '';
+      var stamp = (document.getElementById('inpStampSize') || {}).value || '';
+      var strat = currentStrategy || 'max_opt';
+
+      if (dumpPreview) {
+        if (orderInfo || stamp || (rawItems && rawItems.length > 0)) {
+          dumpPreview.textContent = "Заказ: " + (orderInfo || "без номера") + " | Штамп: " + (stamp || "-") + " | Ручьев: " + cols + " | Видов: " + (rawItems ? rawItems.length : 0);
+        } else {
+          dumpPreview.textContent = "Заказ: не загружен (будут отправлены базовые параметры окружения)";
+        }
+      }
+      modal.style.display = 'flex';
+      setTimeout(function() {
+        var msg = document.getElementById('fbMessage');
+        if (msg) msg.focus();
+      }, 50);
+    }
+
+    function closeFeedbackModal() {
+      var modal = document.getElementById('feedbackModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function buildFeedbackReport() {
+      var author = (document.getElementById('fbAuthor') || {}).value || 'Сотрудник препресса';
+      var message = (document.getElementById('fbMessage') || {}).value || '';
+      var fbTypeElem = document.querySelector('input[name="fbType"]:checked');
+      var fbType = fbTypeElem ? fbTypeElem.value : 'Отзыв';
+      var attachDump = (document.getElementById('fbAttachDump') || {}).checked;
+
+      var now = new Date();
+      var report = "=== ЦЕНТР ТИРАЖЕЙ: ОБРАТНАЯ СВЯЗЬ ===\n";
+      report += "Дата: " + now.toLocaleString('ru-RU') + "\n";
+      report += "Категория: " + fbType + "\n";
+      report += "Автор: " + author + "\n";
+      report += "Версия сервиса: v3.5 Web Prod\n\n";
+      report += "--- СООБЩЕНИЕ / ВОПРОС ---\n";
+      report += (message.trim().length > 0 ? message : "(текст сообщения не указан)") + "\n\n";
+
+      if (attachDump) {
+        report += "--- ТЕХНИЧЕСКИЙ ДИАГНОСТИЧЕСКИЙ ДАМП ---\n";
+        report += "Заказ: " + ((document.getElementById('inpOrderInfo') || {}).value || '-') + "\n";
+        report += "Штамп: " + ((document.getElementById('inpStampSize') || {}).value || '-') + "\n";
+        report += "Параметры: Ручьев=" + ((document.getElementById('inpCols') || {}).value || '-') +
+                  ", Шагов=" + ((document.getElementById('inpSteps') || {}).value || '-') +
+                  ", Раппорт=" + ((document.getElementById('inpTargetRap') || {}).value || '-') +
+                  ", Бобина=" + ((document.getElementById('inpRollStep') || {}).value || '-') + "\n";
+        report += "Алгоритм спусков: " + (currentStrategy || '-') + "\n";
+        report += "Браузер / Платформа: " + navigator.userAgent + "\n";
+
+        var rawSrc = (document.getElementById('inpRawSource') || {}).value || '';
+        if (rawSrc.trim().length > 0) {
+          report += "\nВходные данные (CRM/буфер):\n" + rawSrc.trim() + "\n";
+        }
+        var cleanExp = (document.getElementById('txtCleanExport') || {}).value || '';
+        if (cleanExp.trim().length > 0) {
+          report += "\nСпуски (Excel/CRM):\n" + cleanExp.trim() + "\n";
+        }
+        var artboards = (document.getElementById('txtArtboardNames') || {}).value || '';
+        if (artboards.trim().length > 0) {
+          report += "\nИмена монтажек AI:\n" + artboards.trim() + "\n";
+        }
+      }
+      return { type: fbType, author: author, message: message, fullText: report };
+    }
+
+    function submitFeedbackEmail() {
+      var data = buildFeedbackReport();
+      var subject = "[Центр тиражей " + data.type + "] от " + data.author;
+      var mailtoUrl = "mailto:" + DEV_FEEDBACK_EMAIL +
+                      "?subject=" + encodeURIComponent(subject) +
+                      "&body=" + encodeURIComponent(data.fullText);
+
+      window.location.href = mailtoUrl;
+      showToast("Открываем почтовый клиент для отправки...");
+      setTimeout(closeFeedbackModal, 800);
+    }
+
+    function copyFeedbackReport() {
+      var data = buildFeedbackReport();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(data.fullText).then(function() {
+          showToast("Полный отчёт скопирован в буфер обмена!");
+          setTimeout(closeFeedbackModal, 800);
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = data.fullText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast("Полный отчёт скопирован в буфер обмена!");
+        setTimeout(closeFeedbackModal, 800);
+      }
+    }
+
+    function downloadCompanionScript() {
+      var scriptUrl = "Применить_имена_монтажек.jsx";
+      var a = document.createElement('a');
+      a.href = scriptUrl;
+      a.download = "Применить_имена_монтажек.jsx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast("Скачивание скрипта началось!");
+    }
+
+    function toggleMiniMode() {
+      var isMini = document.body.classList.toggle('mini-mode');
+      localStorage.setItem('calc_mini_mode', isMini ? 'true' : 'false');
+      var badge = document.getElementById('orderBadge');
+      var miniBadge = document.getElementById('miniOrderBadge');
+      if (badge && miniBadge) {
+        miniBadge.textContent = badge.textContent || 'v3.5';
+      }
+      try {
+        if (isMini) {
+          if (window.resizeTo) window.resizeTo(260, 56);
+        } else {
+          if (window.resizeTo) window.resizeTo(1150, 820);
+        }
+      } catch(e){}
+    }
+
+    window.onload = function() {
+      if (localStorage.getItem("calc_mini_mode") === "true") { document.body.classList.add("mini-mode"); }
+
+      if (window.__adobe_cep__ && typeof window.__adobe_cep__.setVisible === 'function') {
+        try { window.__adobe_cep__.setVisible(true); } catch(e){}
+      }
+      var savedTheme = localStorage.getItem('calc_active_theme') || 'pink';
+      setTheme(savedTheme);
+      var restored = restoreCalculatorState();
+      if (restored || (document.getElementById('inpRawSource') && document.getElementById('inpRawSource').value.trim().length > 0)) {
+        parseRawInput();
+      }
+      document.querySelectorAll('input, textarea, select').forEach(function(el) {
+        el.addEventListener('keydown', function(e) { e.stopPropagation(); });
+        el.addEventListener('input', function() { saveCalculatorState(); });
+      });
+    };
+  </script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f1b22"/>
+      <stop offset="100%" stop-color="#121013"/>
+    </linearGradient>
+    <linearGradient id="roll" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4a3b4c"/>
+      <stop offset="50%" stop-color="#6b536f"/>
+      <stop offset="100%" stop-color="#372a38"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded plate -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bg)" stroke="#423644" stroke-width="2"/>
+
+  <!-- Imposition Roll Cylinder at the top -->
+  <ellipse cx="24" cy="18" rx="12" ry="6" fill="url(#roll)" stroke="#8e6f92" stroke-width="1.5"/>
+  <path d="M12 18 v10 c0 3.3 5.4 6 12 6 s12 -2.7 12 -6 v-10" fill="url(#roll)" stroke="#8e6f92" stroke-width="1.5"/>
+  <ellipse cx="24" cy="28" rx="12" ry="6" fill="#322634" stroke="#8e6f92" stroke-width="1.5"/>
+
+  <!-- Unwinding Sheet with 3 Streams (ручьи) -->
+  <path d="M36 28 L54 36 L54 52 L18 52 L18 42" fill="none" stroke="#f096cd" stroke-width="1.8" stroke-linejoin="round"/>
+  
+  <!-- Imposition Stream Guides (параллельные ручьи) -->
+  <line x1="28" y1="52" x2="28" y2="40" stroke="#fdf2f8" stroke-width="1.5" stroke-dasharray="2 2"/>
+  <line x1="38" y1="52" x2="38" y2="34" stroke="#fdf2f8" stroke-width="1.5" stroke-dasharray="2 2"/>
+  
+  <!-- Registration Mark (приводная крестовая метка препресса) -->
+  <circle cx="48" cy="18" r="7" fill="none" stroke="#f096cd" stroke-width="1.5"/>
+  <line x1="48" y1="8" x2="48" y2="28" stroke="#f096cd" stroke-width="1.5"/>
+  <line x1="38" y1="18" x2="58" y2="18" stroke="#f096cd" stroke-width="1.5"/>
+  <circle cx="48" cy="18" r="2.5" fill="#f096cd"/>
+</svg>

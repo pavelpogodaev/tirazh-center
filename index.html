@@ -461,10 +461,6 @@
 
     <div class="top-controls">
       <button class="btn-primary" onclick="exportReportTXT()">Скачать отчёт (.txt)</button>
-      <button class="btn-theme btn-small" onclick="openFeedbackModal()" title="Написать отзыв или сообщить об ошибке разработчику (Павел Погодаев)" style="font-weight:600; background:var(--bg-card); color:var(--primary); border:1px solid var(--border);">
-        💬 Отзыв
-      </button>
-
       <span style="color:var(--text-muted); font-size:11px; margin-left:2px;">Тема:</span>
       <select id="selTheme" onchange="setTheme(this.value)" style="width:auto; padding:3px 8px; font-size:11px; font-weight:600; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); border-radius:4px; cursor:pointer;">
         <option value="pink">Prepress Pink</option>
@@ -499,12 +495,12 @@
         </div>
 
         <div class="params-row">
-          <div class="param-box"><label>Заказ № / Клиент</label><input type="text" id="inpOrderInfo" placeholder="8135_OS_Брюмен" onchange="recalcAll()"></div>
-          <div class="param-box"><label>Штамп Ш×Д</label><input type="text" id="inpStampSize" placeholder="141.5_197" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Заказ № / Клиент</label><input type="text" id="inpOrderInfo"  onchange="recalcAll()"></div>
+          <div class="param-box"><label>Штамп Ш×Д</label><input type="text" id="inpStampSize"  onchange="recalcAll()"></div>
           <div class="param-box"><label>Ручьёв (C)</label><input type="number" id="inpCols" min="1" max="30" onchange="recalcAll()"></div>
           <div class="param-box"><label>Шагов (R)</label><input type="number" id="inpSteps" min="1" max="50" onchange="recalcAll()"></div>
           <div class="param-box"><label>Рап. CRM</label><input type="number" id="inpTargetRap" min="0" onchange="recalcAll()"></div>
-          <div class="param-box"><label>Бобина (шт)</label><input type="number" id="inpRollStep" value="500" min="0" step="50" onchange="recalcAll()"></div>
+          <div class="param-box"><label>Бобина (шт)</label><input type="number" id="inpRollStep" min="0" step="50" onchange="recalcAll()"></div>
         </div>
 
         <textarea id="inpRawSource" rows="5" placeholder="Вставьте JSON из букмарклета ИЛИ скопированный список (Имя | Тираж | ШК)..."></textarea>
@@ -652,62 +648,6 @@
   </div>
 
   
-  <!-- Модальное окно обратной связи и сообщений об ошибках -->
-  <div id="feedbackModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeFeedbackModal();">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-header-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span>Обратная связь и предложения</span>
-        </div>
-        <button class="btn-close-modal" onclick="closeFeedbackModal()" title="Закрыть">✕</button>
-      </div>
-      <div class="modal-body">
-        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
-          Отзыв будет направлен разработчику: <strong style="color:var(--text-main);">Павел Погодаев</strong> (<a href="mailto:pavelpogodaev@gmail.com" style="color:var(--primary); text-decoration:none;">pavelpogodaev@gmail.com</a>).
-        </div>
-
-        <div style="margin-bottom:10px;">
-          <label style="font-size:10.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:5px; text-transform:uppercase;">Тип сообщения</label>
-          <div class="pill-radio-group">
-            <label class="pill-radio"><input type="radio" name="fbType" value="Пожелание / идея" checked> <span>Пожелание / идея</span></label>
-            <label class="pill-radio"><input type="radio" name="fbType" value="Ошибка в расчете"> <span>Ошибка в расчете</span></label>
-            <label class="pill-radio"><input type="radio" name="fbType" value="Вопрос"> <span>Вопрос</span></label>
-          </div>
-        </div>
-
-        <div style="margin-bottom:10px;">
-          <label style="font-size:10.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px; text-transform:uppercase;">Ваше имя или отдел</label>
-          <input type="text" id="fbAuthor" placeholder="Например: Иван (Препресс)" style="width:100%; box-sizing:border-box;">
-        </div>
-
-        <div style="margin-bottom:10px;">
-          <label style="font-size:10.5px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px; text-transform:uppercase;">Сообщение (что улучшить или что пошло не так)</label>
-          <textarea id="fbMessage" rows="4" placeholder="Опишите подробно, с каким заказом возникла проблема или какую функцию хочется добавить..." style="width:100%; box-sizing:border-box;"></textarea>
-        </div>
-
-        <div style="margin-bottom:14px; background:var(--bg-input); padding:8px 10px; border-radius:6px; border:1px solid var(--border);">
-          <label class="chk-label" style="font-size:11px; cursor:pointer;">
-            <input type="checkbox" id="fbAttachDump" checked>
-            <span>Прикрепить диагностические данные текущего расчета</span>
-          </label>
-          <div id="fbDumpPreview" style="font-size:10px; color:var(--text-muted); margin-top:4px; font-family:monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-            Заказ: не загружен
-          </div>
-        </div>
-
-        <div style="display:flex; gap:8px;">
-          <button class="btn-primary" style="flex:1; padding:9px 12px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="submitFeedbackEmail()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Отправить на почту
-          </button>
-          <button style="flex:1; padding:9px 12px; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="copyFeedbackReport()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Скопировать отчёт
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="toast">Скопировано!</div>
@@ -1198,6 +1138,10 @@
       const rows = Math.max(1, parseInt(obj.rows, 10) || 1);
       document.getElementById('inpCols').value = cols;
       const targetRap = cleanNum(obj.rapportOnZakaz);
+      const bobinVal = cleanNum(obj.countInRoll) || cleanNum(obj.count_in_roll) || cleanNum(obj.roll) || cleanNum(obj.bobina) || cleanNum(obj.winding) || cleanNum(obj.windingCount) || cleanNum(obj.countInBobin);
+      if (bobinVal > 0) {
+        document.getElementById('inpRollStep').value = bobinVal;
+      }
       document.getElementById('inpTargetRap').value = targetRap || 0;
 
       const totalTirazh = cleanNum(obj.tirazh);
@@ -2126,123 +2070,6 @@
 
     
     
-    // --- ОБРАТНАЯ СВЯЗЬ И ОТЗЫВЫ (Павел Погодаев: pavelpogodaev@gmail.com) ---
-    const DEV_FEEDBACK_EMAIL = "pavelpogodaev@gmail.com";
-
-    function openFeedbackModal() {
-      var modal = document.getElementById('feedbackModal');
-      if (!modal) return;
-      var dumpPreview = document.getElementById('fbDumpPreview');
-      var orderInfo = (document.getElementById('inpOrderInfo') || {}).value || '';
-      var cols = (document.getElementById('inpCols') || {}).value || '';
-      var steps = (document.getElementById('inpSteps') || {}).value || '';
-      var stamp = (document.getElementById('inpStampSize') || {}).value || '';
-      var strat = currentStrategy || 'max_opt';
-
-      if (dumpPreview) {
-        if (orderInfo || stamp || (rawItems && rawItems.length > 0)) {
-          dumpPreview.textContent = "Заказ: " + (orderInfo || "без номера") + " | Штамп: " + (stamp || "-") + " | Ручьев: " + cols + " | Видов: " + (rawItems ? rawItems.length : 0);
-        } else {
-          dumpPreview.textContent = "Заказ: не загружен (будут отправлены базовые параметры окружения)";
-        }
-      }
-      modal.style.display = 'flex';
-      setTimeout(function() {
-        var msg = document.getElementById('fbMessage');
-        if (msg) msg.focus();
-      }, 50);
-    }
-
-    function closeFeedbackModal() {
-      var modal = document.getElementById('feedbackModal');
-      if (modal) modal.style.display = 'none';
-    }
-
-    function buildFeedbackReport() {
-      var author = (document.getElementById('fbAuthor') || {}).value || 'Сотрудник препресса';
-      var message = (document.getElementById('fbMessage') || {}).value || '';
-      var fbTypeElem = document.querySelector('input[name="fbType"]:checked');
-      var fbType = fbTypeElem ? fbTypeElem.value : 'Отзыв';
-      var attachDump = (document.getElementById('fbAttachDump') || {}).checked;
-
-      var now = new Date();
-      var report = "=== ЦЕНТР ТИРАЖЕЙ: ОБРАТНАЯ СВЯЗЬ ===\n";
-      report += "Дата: " + now.toLocaleString('ru-RU') + "\n";
-      report += "Категория: " + fbType + "\n";
-      report += "Автор: " + author + "\n";
-      report += "Версия сервиса: v3.5 Web Prod\n\n";
-      report += "--- СООБЩЕНИЕ / ВОПРОС ---\n";
-      report += (message.trim().length > 0 ? message : "(текст сообщения не указан)") + "\n\n";
-
-      if (attachDump) {
-        report += "--- ТЕХНИЧЕСКИЙ ДИАГНОСТИЧЕСКИЙ ДАМП ---\n";
-        report += "Заказ: " + ((document.getElementById('inpOrderInfo') || {}).value || '-') + "\n";
-        report += "Штамп: " + ((document.getElementById('inpStampSize') || {}).value || '-') + "\n";
-        report += "Параметры: Ручьев=" + ((document.getElementById('inpCols') || {}).value || '-') +
-                  ", Шагов=" + ((document.getElementById('inpSteps') || {}).value || '-') +
-                  ", Раппорт=" + ((document.getElementById('inpTargetRap') || {}).value || '-') +
-                  ", Бобина=" + ((document.getElementById('inpRollStep') || {}).value || '-') + "\n";
-        report += "Алгоритм спусков: " + (currentStrategy || '-') + "\n";
-        report += "Браузер / Платформа: " + navigator.userAgent + "\n";
-
-        var rawSrc = (document.getElementById('inpRawSource') || {}).value || '';
-        if (rawSrc.trim().length > 0) {
-          report += "\nВходные данные (CRM/буфер):\n" + rawSrc.trim() + "\n";
-        }
-        var cleanExp = (document.getElementById('txtCleanExport') || {}).value || '';
-        if (cleanExp.trim().length > 0) {
-          report += "\nСпуски (Excel/CRM):\n" + cleanExp.trim() + "\n";
-        }
-        var artboards = (document.getElementById('txtArtboardNames') || {}).value || '';
-        if (artboards.trim().length > 0) {
-          report += "\nИмена монтажек AI:\n" + artboards.trim() + "\n";
-        }
-      }
-      return { type: fbType, author: author, message: message, fullText: report };
-    }
-
-    function submitFeedbackEmail() {
-      var data = buildFeedbackReport();
-      var subject = "[Центр тиражей " + data.type + "] от " + data.author;
-      var mailtoUrl = "mailto:" + DEV_FEEDBACK_EMAIL +
-                      "?subject=" + encodeURIComponent(subject) +
-                      "&body=" + encodeURIComponent(data.fullText);
-
-      window.location.href = mailtoUrl;
-      showToast("Открываем почтовый клиент для отправки...");
-      setTimeout(closeFeedbackModal, 800);
-    }
-
-    function copyFeedbackReport() {
-      var data = buildFeedbackReport();
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(data.fullText).then(function() {
-          showToast("Полный отчёт скопирован в буфер обмена!");
-          setTimeout(closeFeedbackModal, 800);
-        });
-      } else {
-        var ta = document.createElement('textarea');
-        ta.value = data.fullText;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast("Полный отчёт скопирован в буфер обмена!");
-        setTimeout(closeFeedbackModal, 800);
-      }
-    }
-
-    function downloadCompanionScript() {
-      var scriptUrl = "Применить_имена_монтажек.jsx";
-      var a = document.createElement('a');
-      a.href = scriptUrl;
-      a.download = "Применить_имена_монтажек.jsx";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast("Скачивание скрипта началось!");
-    }
-
     function toggleMiniMode() {
       var isMini = document.body.classList.toggle('mini-mode');
       localStorage.setItem('calc_mini_mode', isMini ? 'true' : 'false');

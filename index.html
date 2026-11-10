@@ -1124,7 +1124,64 @@
           } catch (e) {}
         }
       }
+      currentColorsStr = 'CMYK';
       finalizeParsedItems(parseMultilineTextList(rawText));
+    }
+
+    function normalizeColorsString(raw) {
+      if (!raw) return '';
+      let s = String(raw).trim().toUpperCase();
+      if (!s) return '';
+      if (/БЕЛ/.test(s) && s.indexOf('W') === -1) s = s.replace(/БЕЛ[А-Я]*/g, 'W');
+      if (/СЕР/.test(s) && s.indexOf('S') === -1) s = s.replace(/СЕР[А-Я]*/g, 'S');
+      s = s.replace(/С/g, 'C').replace(/М/g, 'M').replace(/К/g, 'K');
+      s = s.replace(/(^|[\s+,])([2-9])\s*([WKS])\b/g, (_, sep, n, ch) => sep + ch.repeat(parseInt(n, 10)));
+      s = s.replace(/\s*\+\s*/g, '').replace(/\s+/g, '');
+      return s.replace(/[^A-Z0-9_-]/g, '');
+    }
+
+    function mergeColorStrings(colorList) {
+      const clean = (colorList || []).map(normalizeColorsString).filter(Boolean);
+      if (!clean.length) return '';
+      const uniq = [...new Set(clean)];
+      if (uniq.length === 1) return uniq[0];
+
+      const chOrder = ['C', 'M', 'Y', 'K', 'O', 'G', 'V', 'W', 'S'];
+      const maxCh = { C: 0, M: 0, Y: 0, K: 0, O: 0, G: 0, V: 0, W: 0, S: 0 };
+      const extraSpots = [];
+
+      uniq.forEach(str => {
+        const spots = str.match(/PANTONE[A-Z0-9_-]*|P\d+[A-Z]?/g) || [];
+        spots.forEach(sp => {
+          if (extraSpots.indexOf(sp) === -1) extraSpots.push(sp);
+        });
+        const rest = str.replace(/PANTONE[A-Z0-9_-]*|P\d+[A-Z]?/g, '');
+        chOrder.forEach(ch => {
+          const matches = rest.match(new RegExp(ch, 'g'));
+          const cnt = matches ? matches.length : 0;
+          if (cnt > maxCh[ch]) maxCh[ch] = cnt;
+        });
+      });
+
+      let out = '';
+      chOrder.forEach(ch => {
+        for (let i = 0; i < maxCh[ch]; i++) out += ch;
+      });
+      return out + extraSpots.join('');
+    }
+
+    function extractOrderFallbackColors(obj) {
+      if (!obj || typeof obj !== 'object') return 'CMYK';
+      const maketColors = Array.isArray(obj.makets)
+        ? obj.makets.map(m => normalizeColorsString(m && m.colors)).filter(Boolean)
+        : [];
+      if (maketColors.length > 0) {
+        return mergeColorStrings(maketColors) || 'CMYK';
+      }
+      if (obj.colorsShort && obj.colorsShort.length) {
+        return normalizeColorsString(obj.colorsShort.join('')) || 'CMYK';
+      }
+      return 'CMYK';
     }
 
     function applyJsonOrderObject(obj) {
@@ -1163,7 +1220,7 @@
         document.getElementById('inpSteps').value = stepsPerLane;
       }
 
-      if (obj.colorsShort && obj.colorsShort.length) currentColorsStr = obj.colorsShort.join('');
+      currentColorsStr = extractOrderFallbackColors(obj);
 
       const makets = obj.makets || [];
       const noteItems = obj.prepressNote ? parseMultilineTextList(obj.prepressNote) : [];
@@ -1178,6 +1235,7 @@
             shortName: m.name.trim(),
             amount: cleanNum(m.amount),
             barcode: (m.article || '').trim(),
+            colors: normalizeColorsString(m.colors) || currentColorsStr,
             crmSpusk: mSp ? parseInt(mSp[1], 10) : 0,
             crmLanes: (mSp && mSp[2]) ? parseInt(mSp[2], 10) : 1
           };
@@ -1193,6 +1251,7 @@
             shortName: m.name.trim(),
             amount: cleanNum(m.amount),
             barcode: (m.article || '').trim(),
+            colors: normalizeColorsString(m.colors) || currentColorsStr,
             crmSpusk: mSp ? parseInt(mSp[1], 10) : 0,
             crmLanes: (mSp && mSp[2]) ? parseInt(mSp[2], 10) : 1
           };
@@ -1285,6 +1344,7 @@
           } else {
             mergedMap[it.dupKey].amount += it.amount;
             mergedMap[it.dupKey].effectiveTirazh = mergedMap[it.dupKey].amount;
+            mergedMap[it.dupKey].colors = mergeColorStrings([mergedMap[it.dupKey].colors, it.colors]);
           }
         });
       } else {
@@ -1933,7 +1993,8 @@
         if (isOS) {
           return buildOsSpuskName(orderNumOnly, sp, includeFullMulti);
         }
-        return `${orderInfo}_page${sp.spuskNum}_${sp.rap}rap_${stampSize}_${currentColorsStr}`;
+        const spColors = mergeColorStrings(sp.items.map(it => it.colors)) || currentColorsStr || 'CMYK';
+        return `${orderInfo}_page${sp.spuskNum}_${sp.rap}rap_${stampSize}_${spColors}`;
       });
       if (!isOS) abLines.push(`Stamp_${stampSize}`);
       document.getElementById('txtArtboardNames').value = abLines.join('\n');

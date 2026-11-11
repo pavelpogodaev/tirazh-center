@@ -1854,14 +1854,43 @@
         `Видов: ${workingItems.length} | Спусков: ${spusksResult.length} | Раппортов: ${totalRaps} rap | Материал: ${totalPrintMeters}м печать + ${totalMakeReadyMeters}м приладки = ${grandTotalMeters}м`;
 
       statusBar.className = 'status-bar status-ok';
-      if (savedMeters > 5 && savedSpusks > 0) {
-        document.getElementById('statusText').innerText =
-          `Оптимизировано: сэкономлено ${savedMeters} м материала и ${savedSpusks} приладок (${spusksResult.length} спуска вместо ${baseSpusks.length})`;
-      } else if (targetRap > 0 && totalRaps === targetRap) {
-        document.getElementById('statusText').innerText = `Идеальное совпадение с CRM: ${totalRaps} rap`;
-      } else {
-        document.getElementById('statusText').innerText = `Расчёт выполнен (${spusksResult.length} спусков, всего ${grandTotalMeters} м с приладками).`;
+      document.getElementById('statusText').innerText = formatCalcStatusText({
+        savedMeters: savedMeters,
+        savedSpusks: savedSpusks,
+        spuskCount: spusksResult.length,
+        baseSpuskCount: baseSpusks.length,
+        grandTotalMeters: grandTotalMeters,
+        totalRaps: totalRaps,
+        targetRap: targetRap
+      });
+    }
+
+    function formatCalcStatusText(params) {
+      const savedMeters = params.savedMeters || 0;
+      const savedSpusks = params.savedSpusks || 0;
+      const spuskCount = params.spuskCount || 0;
+      const baseSpuskCount = params.baseSpuskCount || 0;
+      const grandTotalMeters = params.grandTotalMeters || 0;
+      const totalRaps = params.totalRaps || 0;
+      const targetRap = params.targetRap || 0;
+
+      const isIdealMatch = targetRap > 0 && totalRaps === targetRap;
+      let rapInfo = `Раппортов: ${totalRaps} rap`;
+      if (targetRap > 0 && totalRaps !== targetRap) {
+        const diff = totalRaps - targetRap;
+        const diffSign = diff > 0 ? `+${diff}` : `${diff}`;
+        rapInfo = `Раппортов: ${totalRaps} rap (CRM: ${targetRap}, ${diffSign})`;
+      } else if (isIdealMatch) {
+        rapInfo = `Раппортов: ${totalRaps} rap (совпадает с CRM)`;
       }
+
+      if (savedMeters > 5 && savedSpusks > 0) {
+        return `Оптимизировано: сэкономлено ${savedMeters} м материала и ${savedSpusks} приладок (${spuskCount} спуска вместо ${baseSpuskCount}) | ${rapInfo}`;
+      }
+      if (isIdealMatch) {
+        return `Идеальное совпадение с CRM: ${totalRaps} rap`;
+      }
+      return `Расчёт выполнен (${spuskCount} спусков, всего ${grandTotalMeters} м с приладками) | ${rapInfo}`;
     }
 
     function translitOS(str) {
